@@ -1,146 +1,389 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claude Study - Sang-arm</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 800px;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-        .menu {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 30px 0;
-        }
-        .menu-item {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 20px;
-            text-decoration: none;
-            color: #333;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .menu-item:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-            transform: translateY(-2px);
-        }
-        .menu-item h3 {
-            color: #667eea;
-            margin-bottom: 8px;
-        }
-        .menu-item p {
-            font-size: 0.9em;
-            color: #666;
-        }
-        .files {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        .files h3 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-        .file-link {
-            display: block;
-            padding: 8px 12px;
-            margin: 5px 0;
-            background: white;
-            border-left: 3px solid #667eea;
-            color: #667eea;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-        .file-link:hover {
-            background: #f0f4ff;
-            padding-left: 20px;
-        }
-        .footer {
-            color: #999;
-            font-size: 0.9em;
-            margin-top: 30px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 조명 MD 분석 & 키 프로덕트 전략</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#f4f3ef;color:#222;line-height:1.7;}
+
+    header{background:linear-gradient(135deg,#0f172a,#1e293b);color:white;padding:48px 40px 38px;position:relative;overflow:hidden;}
+    header::after{content:'';position:absolute;right:-60px;top:-60px;width:300px;height:300px;background:rgba(234,179,8,0.08);border-radius:50%;}
+    .hi{max-width:1100px;margin:0 auto;position:relative;}
+    .badge{display:inline-block;background:rgba(234,179,8,0.2);border:1px solid rgba(234,179,8,0.4);border-radius:20px;padding:4px 14px;font-size:0.73rem;letter-spacing:2px;color:#fcd34d;margin-bottom:14px;}
+    header h1{font-size:2.1rem;font-weight:800;margin-bottom:6px;}
+    header h1 em{color:#fcd34d;font-style:normal;}
+    header p{color:#94a3b8;font-size:0.88rem;}
+    .hmeta{display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;}
+    .hmb{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 16px;}
+    .hmb .l{font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;}
+    .hmb .v{font-size:0.85rem;color:#e2e8f0;font-weight:600;margin-top:2px;}
+
+    .wrap{max-width:1100px;margin:0 auto;padding:36px 20px;}
+
+    /* KPI */
+    .kpi4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+    .kbox{background:white;border-radius:14px;padding:18px 16px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.06);border-top:3px solid;}
+    .kbox .n{font-size:1.9rem;font-weight:800;line-height:1.2;}
+    .kbox .lb{font-size:0.75rem;color:#888;margin-top:4px;}
+    .ka{border-color:#eab308;} .ka .n{color:#eab308;}
+    .kb{border-color:#6366f1;} .kb .n{color:#6366f1;}
+    .kc{border-color:#22c55e;} .kc .n{color:#22c55e;}
+    .kd{border-color:#f43f5e;} .kd .n{color:#f43f5e;}
+
+    /* Section */
+    .s{background:white;border-radius:16px;padding:26px 28px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+    .st{font-size:1.02rem;font-weight:700;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+    .si{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.88rem;flex-shrink:0;}
+
+    /* Product cards grid */
+    .pcgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+    .pc{background:#fafaf8;border-radius:12px;padding:16px;border:1px solid #eee;transition:box-shadow .2s;}
+    .pc:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+    .pc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+    .pc-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;}
+    .rk1{background:#ffd700;color:#7a5c00;} .rk2{background:#c0c0c0;color:#333;} .rk3{background:#cd7f32;color:#fff;}
+    .rk-hot{background:#fee2e2;color:#dc2626;} .rk-n{background:#f3f4f6;color:#666;}
+    .pc-type{font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:8px;}
+    .tp-f{background:#dbeafe;color:#1d4ed8;} .tp-p{background:#dcfce7;color:#166534;}
+    .tp-d{background:#fef3c7;color:#92400e;} .tp-c{background:#ede9fe;color:#6d28d9;}
+    .tp-h{background:#f0fdf4;color:#15803d;} .tp-pe{background:#fce7f3;color:#9d174d;}
+    .pc-brand{font-size:0.72rem;color:#888;margin-bottom:3px;}
+    .pc-name{font-size:0.82rem;font-weight:600;color:#111;margin-bottom:10px;line-height:1.4;}
+    .pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+    .pcs{background:white;border-radius:8px;padding:6px 8px;text-align:center;border:1px solid #f0f0ee;}
+    .pcs .sv{font-size:0.85rem;font-weight:700;color:#111;}
+    .pcs .sl{font-size:0.66rem;color:#999;}
+    .pc-feat{margin-top:8px;}
+    .pc-feat .ft{display:inline-block;font-size:0.7rem;background:#f8f8f6;border-radius:6px;padding:2px 7px;margin:2px 2px 0 0;color:#555;}
+    .pc-insight{margin-top:10px;padding-top:10px;border-top:1px dashed #e5e5e3;font-size:0.76rem;color:#666;line-height:1.5;}
+
+    /* 2col */
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+
+    /* Chart wrap */
+    .cw{position:relative;height:250px;}
+    .cw.t{height:300px;}
+
+    /* Score bar */
+    .sbar{margin-bottom:12px;}
+    .sbar-head{display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px;}
+    .sbar-head span:last-child{color:#888;font-size:0.75rem;}
+    .sbar-bg{background:#f3f4f6;border-radius:99px;height:7px;}
+    .sbar-fill{height:7px;border-radius:99px;}
+
+    /* Key product highlight */
+    .keyprod{background:linear-gradient(135deg,#1e293b,#0f172a);color:white;border-radius:18px;padding:32px;margin-bottom:20px;position:relative;overflow:hidden;}
+    .keyprod::before{content:'';position:absolute;right:-40px;bottom:-40px;width:200px;height:200px;background:rgba(234,179,8,0.1);border-radius:50%;}
+    .keyprod h2{font-size:1.3rem;font-weight:800;margin-bottom:6px;}
+    .keyprod h2 em{color:#fcd34d;font-style:normal;}
+    .keyprod .sub{color:#94a3b8;font-size:0.85rem;margin-bottom:24px;}
+    .kp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;position:relative;}
+    .kp-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:18px;}
+    .kp-card.top{background:rgba(234,179,8,0.15);border-color:rgba(234,179,8,0.4);}
+    .kp-num{font-size:0.7rem;color:#64748b;margin-bottom:4px;}
+    .kp-title{font-size:0.95rem;font-weight:700;color:white;margin-bottom:6px;}
+    .kp-card.top .kp-title{color:#fcd34d;}
+    .kp-price{font-size:1.3rem;font-weight:800;color:#fcd34d;margin-bottom:8px;}
+    .kp-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+    .kp-tag{font-size:0.68rem;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,0.1);color:#cbd5e1;}
+    .kp-card.top .kp-tag{background:rgba(234,179,8,0.2);color:#fde68a;}
+    .kp-why{font-size:0.77rem;color:#94a3b8;line-height:1.6;}
+    .kp-card.top .kp-why{color:#e2e8f0;}
+    .best-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#eab308;color:#422006;font-size:0.7rem;font-weight:700;padding:3px 12px;border-radius:12px;white-space:nowrap;}
+
+    /* MD table */
+    .mdt{width:100%;border-collapse:collapse;font-size:0.82rem;}
+    .mdt th{background:#f8f8f6;padding:9px 12px;text-align:left;font-weight:700;font-size:0.75rem;color:#555;border-bottom:2px solid #eee;}
+    .mdt td{padding:9px 12px;border-bottom:1px solid #f3f3f1;vertical-align:top;}
+    .mdt tr:last-child td{border-bottom:none;}
+    .mdt tr:hover{background:#fafaf8;}
+    .score-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px;}
+
+    /* Advice cards */
+    .adv{border-radius:12px;padding:18px 20px;border-left:4px solid;margin-bottom:12px;}
+    .adv h4{font-size:0.88rem;font-weight:700;margin-bottom:6px;}
+    .adv p{font-size:0.81rem;color:#555;line-height:1.6;}
+    .adv ul{font-size:0.81rem;color:#555;line-height:1.9;padding-left:16px;}
+
+    footer{text-align:center;padding:28px;color:#aaa;font-size:0.73rem;}
+    @media(max-width:700px){.kpi4,.pcgrid,.kp-grid{grid-template-columns:1fr 1fr;}.g2{grid-template-columns:1fr;}}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📚 Claude Study</h1>
-        <p class="subtitle">Sang-arm Workshop Materials</p>
 
-        <div class="menu">
-            <a href="1-설치가이드/" class="menu-item">
-                <h3>📖 설치가이드</h3>
-                <p>설치 및 시작하기</p>
-            </a>
-            <a href="2-체험용-샘플/" class="menu-item">
-                <h3>🎯 체험용 샘플</h3>
-                <p>실제 예제 보기</p>
-            </a>
-            <a href="3-도구만들기/" class="menu-item">
-                <h3>🛠️ 도구만들기</h3>
-                <p>커스텀 도구 만드는법</p>
-            </a>
-            <a href="4-자동화/" class="menu-item">
-                <h3>⚙️ 자동화</h3>
-                <p>자동화 기법 배우기</p>
-            </a>
-            <a href="5-영상만들기/" class="menu-item">
-                <h3>🎬 영상만들기</h3>
-                <p>영상 제작 가이드</p>
-            </a>
-        </div>
-
-        <div class="files">
-            <h3>📄 주요 문서</h3>
-            <a href="시작하기.txt" class="file-link">시작하기.txt</a>
-            <a href="치트시트.txt" class="file-link">치트시트.txt</a>
-            <a href="lumir-사이트분석보고서.html" class="file-link">Lumir 사이트 분석 보고서</a>
-            <a href="오늘의집-MD분석보고서.html" class="file-link">오늘의집 MD 분석 보고서</a>
-            <a href="오늘의집-조명-시장분석.html" class="file-link">오늘의집 조명 시장 분석</a>
-            <a href="마케팅-업무흐름.svg" class="file-link">마케팅 업무 흐름</a>
-        </div>
-
-        <div class="footer">
-            <p>✨ MOA-WEB-DB Claude Study Repository</p>
-            <p><a href="https://github.com/MOA-WEB-DB/Claude-Study-Sang-arm" style="color: #667eea; text-decoration: none;">GitHub 저장소 보기</a></p>
-        </div>
+<header>
+  <div class="hi">
+    <div class="badge">MD STRATEGY REPORT</div>
+    <h1>2026 조명 시장 <em>MD 분석</em> & 키 프로덕트 전략</h1>
+    <p>오늘의집 조명 카테고리 판매순 TOP 29 · 제품별 특장점 · MD 조언 · 시장진입 전략</p>
+    <div class="hmeta">
+      <div class="hmb"><div class="l">데이터 기준</div><div class="v">2026.04.01 판매순</div></div>
+      <div class="hmb"><div class="l">분석 제품</div><div class="v">29개</div></div>
+      <div class="hmb"><div class="l">총 리뷰 합계</div><div class="v">40,093개</div></div>
+      <div class="hmb"><div class="l">가격 범위</div><div class="v">27,800 ~ 1,530,000원</div></div>
     </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="kpi4">
+    <div class="kbox ka"><div class="n">🍄 머쉬룸</div><div class="lb">리뷰 1위 형태 (10,681개)</div></div>
+    <div class="kbox kb"><div class="n">포터블 3종</div><div class="lb">충전식 무드등 강세</div></div>
+    <div class="kbox kc"><div class="n">4.8점</div><div class="lb">TOP 29 평균 평점</div></div>
+    <div class="kbox kd"><div class="n">37%</div><div class="lb">평균 할인율</div></div>
+  </div>
+
+  <!-- 제품별 카드 -->
+  <div class="s">
+    <div class="st"><div class="si" style="background:#fef3c7">📦</div>제품별 특장점 & MD 분석 (TOP 20)</div>
+    <div class="pcgrid" id="pcgrid"></div>
+  </div>
+
+  <!-- 차트 -->
+  <div class="g2">
+    <div class="s">
+      <div class="st"><div class="si" style="background:#dbeafe">💰</div>가격대 × 리뷰 수 분포</div>
+      <div class="cw t"><canvas id="scatterChart"></canvas></div>
+    </div>
+    <div class="s">
+      <div class="st"><div class="si" style="background:#dcfce7">📊</div>유형별 평균 리뷰 수</div>
+      <div class="cw t"><canvas id="typeReviewChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- MD 점수 테이블 -->
+  <div class="s">
+    <div class="st"><div class="si" style="background:#ede9fe">🎯</div>MD 관점 주요 제품 평가표</div>
+    <div style="overflow-x:auto;">
+    <table class="mdt">
+      <thead>
+        <tr>
+          <th>제품명</th><th>가격대</th><th>리뷰파워</th><th>할인매력도</th><th>재구매력</th><th>소비자층</th><th>MD 핵심 코멘트</th>
+        </tr>
+      </thead>
+      <tbody id="mdtable"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- 키 프로덕트 전략 -->
+  <div class="keyprod">
+    <h2>🏆 MD 추천 <em>키 프로덕트</em> TOP 3</h2>
+    <p class="sub">시장성·성장성·수익성·진입장벽을 종합 분석한 루미르 신규 제안 키 프로덕트</p>
+    <div class="kp-grid">
+
+      <div class="kp-card top" style="position:relative;">
+        <div class="best-badge">🥇 최우선 추천</div>
+        <div class="kp-num">KEY PRODUCT #1</div>
+        <div class="kp-title">포터블 멀티컬러 무드등</div>
+        <div class="kp-price">59,000 ~ 99,000원</div>
+        <div class="kp-tags">
+          <span class="kp-tag">충전식·무선</span>
+          <span class="kp-tag">7colors</span>
+          <span class="kp-tag">머쉬룸·유기형</span>
+          <span class="kp-tag">밝기·색온도 조절</span>
+        </div>
+        <div class="kp-why">
+          ✅ <strong>근거:</strong> 일광전구 SNOWMAN(1,408리뷰), 아우어룸 머쉬룸(10,681리뷰)가 증명한 시장.<br>
+          루미르의 기존 포터블 기술력 + 머쉬룸 형태 + 멀티컬러 = 최고 시장 적합 조합.<br>
+          5~10만원 가격대가 가장 구매 전환율이 높으며 재구매·선물 수요도 탁월.
+        </div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">KEY PRODUCT #2</div>
+        <div class="kp-title">한지·내추럴 소재 테이블 램프</div>
+        <div class="kp-price">35,000 ~ 65,000원</div>
+        <div class="kp-tags">
+          <span class="kp-tag">한지·천연 소재</span>
+          <span class="kp-tag">따뜻한 확산광</span>
+          <span class="kp-tag">미니멀</span>
+          <span class="kp-tag">웰니스 인테리어</span>
+        </div>
+        <div class="kp-why">
+          ✅ <strong>근거:</strong> 누노즈 한지조명(1,577리뷰, 34,900원)이 꾸준한 장기 베스트.<br>
+          K-감성·자연 소재 트렌드와 결합 시 해외 수출 잠재력 보유.<br>
+          루미르의 소셜 임팩트 브랜딩과도 자연스럽게 연결 가능.
+        </div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">KEY PRODUCT #3</div>
+        <div class="kp-title">미드센추리 플로어 스탠드 라인</div>
+        <div class="kp-price">89,000 ~ 149,000원</div>
+        <div class="kp-tags">
+          <span class="kp-tag">미드센추리 모던</span>
+          <span class="kp-tag">LED 색온도 3단계</span>
+          <span class="kp-tag">거실·침실</span>
+          <span class="kp-tag">3~5colors</span>
+        </div>
+        <div class="kp-why">
+          ✅ <strong>근거:</strong> 유투조명 꽈배기(1,213리뷰), 드엘리사 미드센추리(1,622리뷰).<br>
+          10~15만원대 중가 포지션에서 디자인 차별화 여지 충분.<br>
+          IP65 방수 기능 추가 시 캠핑·아웃도어 확장도 가능.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MD 카테고리 전략 -->
+  <div class="s">
+    <div class="st"><div class="si" style="background:#f0fdf4">🧠</div>MD 카테고리 전략 조언</div>
+    <div class="g2">
+      <div>
+        <div class="adv" style="background:#eff6ff;border-color:#3b82f6;">
+          <h4 style="color:#1d4ed8">📐 가격 포트폴리오 전략</h4>
+          <ul>
+            <li><strong>엔트리 (3~5만):</strong> 볼륨 확보용 가성비 제품 — 리뷰 1,000개+ 목표</li>
+            <li><strong>코어 (7~15만):</strong> 루미르 주력 포터블 라인 — 브랜드 수익성 중심</li>
+            <li><strong>프리미엄 (20만+):</strong> 프리미엄 포지셔닝 유지 — 플로스·아르떼미데 대항</li>
+          </ul>
+        </div>
+        <div class="adv" style="background:#fef9ee;border-color:#f59e0b;">
+          <h4 style="color:#b45309">🎨 색상·옵션 전략</h4>
+          <p>베스트셀러 분석 결과, <strong>3colors 이상 색상 옵션</strong>을 제공하는 제품이 리뷰 수에서 압도적 우위. 최소 3가지, 이상적으로는 7가지 색상 옵션 제공 권장. 색상명을 감성적으로 네이밍(오트밀, 모카, 크롬 등)하면 SNS 확산 효과.</p>
+        </div>
+      </div>
+      <div>
+        <div class="adv" style="background:#f0fdf4;border-color:#22c55e;">
+          <h4 style="color:#166534">📣 리뷰 볼륨 확보 전략</h4>
+          <p>상위 판매 제품의 핵심 차별점은 <strong>리뷰 수</strong>. 아우어룸(10,681), 레나에너지(6,967), 투플레이스(3,334). 초기 출시 후 3개월 이내 리뷰 500개 목표 설정 → 구매 확인 후 리뷰 요청 자동화 + 포토 리뷰 추가 적립금 지급 필수.</p>
+        </div>
+        <div class="adv" style="background:#fdf4ff;border-color:#a855f7;">
+          <h4 style="color:#7e22ce">🔍 SEO · 키워드 전략</h4>
+          <p>오늘의집 내 상위 노출 키워드: <strong>"무드등", "포터블 조명", "머쉬룸 조명", "인테리어 스탠드", "충전식 램프"</strong>. 제품명에 핵심 키워드 포함, 상세 이미지에 공간별 연출컷(거실·침실·캠핑) 다양하게 구성 필수.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 점수 바 -->
+    <div style="margin-top:20px; padding-top:20px; border-top:1px solid #f0f0ee;">
+      <p style="font-size:0.85rem; font-weight:700; color:#333; margin-bottom:14px;">📊 카테고리별 시장 진입 매력도</p>
+      <div class="g2">
+        <div>
+          <div class="sbar"><div class="sbar-head"><span>포터블·충전식 무드등</span><span>★★★★★ 95점</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:95%;background:#6366f1;"></div></div></div>
+          <div class="sbar"><div class="sbar-head"><span>머쉬룸·유기형 장스탠드</span><span>★★★★★ 90점</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:90%;background:#6366f1;"></div></div></div>
+          <div class="sbar"><div class="sbar-head"><span>한지·내추럴 소재 조명</span><span>★★★★☆ 80점</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:80%;background:#22c55e;"></div></div></div>
+          <div class="sbar"><div class="sbar-head"><span>미드센추리 모던 스탠드</span><span>★★★★☆ 78점</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:78%;background:#22c55e;"></div></div></div>
+        </div>
+        <div>
+          <div class="sbar"><div class="sbar-head"><span>안티블루라이트 책상 스탠드</span><span>★★★★☆ 75점</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:75%;background:#f59e0b;"></div></div></div>
+          <div class="sbar"><div class="sbar-head"><span>실링팬 복합 조명</span><span>★★★☆☆ 65점</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:65%;background:#f59e0b;"></div></div></div>
+          <div class="sbar"><div class="sbar-head"><span>초저가 플로어 스탠드</span><span>★★★☆☆ 55점</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:55%;background:#ef4444;"></div></div></div>
+          <div class="sbar"><div class="sbar-head"><span>명품 수입 브랜드</span><span>★★☆☆☆ 40점</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:40%;background:#ef4444;"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>데이터 출처: 오늘의집 쇼핑(ohou.se) 조명 카테고리 · 수집일: 2026.04.01 · Claude Code 생성</footer>
+
+<script>
+const products = [
+  {순위:1,브랜드:"플로스(Flos)",이름:"루미네이터 플로어 램프 5colors",유형:"플로어",가격:1530000,할인:10,평점:4.9,리뷰:40,특장점:["5가지 컬러","정품 전구 포함","국내 A/S"],소비자:"디자인 매니아·고소득층",코멘트:"명품 브랜드 후광효과. 리뷰 낮아도 브랜드파워로 판매"},
+  {순위:2,브랜드:"플로스(Flos)",이름:"파렌티지 팬던트 램프",유형:"팬던트",가격:689400,할인:10,평점:4.9,리뷰:13,특장점:["디자인 아이콘","정품 보증","팬던트형"],소비자:"인테리어 전문가",코멘트:"식탁 포컬포인트용. 고가 펜던트 시장 존재 확인"},
+  {순위:3,브랜드:"한샘",이름:"리네아 플로어 장스탠드",유형:"플로어",가격:77900,할인:51,평점:4.1,리뷰:26,특장점:["대형 브랜드 신뢰","51% 대폭 할인"],소비자:"기능 중심 일반 소비자",코멘트:"한샘 브랜드로 신뢰 확보. 평점 4.1 낮음 → 품질 개선 기회"},
+  {순위:4,브랜드:"올루미",이름:"라비드 풀스위치 감성 무드등",유형:"플로어",가격:78840,할인:10,평점:4.8,리뷰:24,특장점:["풀스위치 감성","무드등 겸용"],소비자:"2030 인테리어 관심층",코멘트:"'감성'·'무드' 키워드 강세. 분위기 연출 수요 지속 증가"},
+  {순위:5,브랜드:"SMOL DESIGN",이름:"퀴브 포터블램프 4colors",유형:"포터블",가격:92000,할인:20,평점:4.9,리뷰:8,특장점:["큐브 독창형태","4컬러","오늘의집 단독"],소비자:"디자인 감도 높은 2030",코멘트:"단독 상품 희소성 전략 유효. 아직 리뷰 적어 성장 여지"},
+  {순위:6,브랜드:"오메코",이름:"LAYER 4 루나리프 플로어 램프",유형:"플로어",가격:217000,할인:19,평점:4.7,리뷰:266,특장점:["레이어드 디자인","인테리어 포컬","오늘의집 단독"],소비자:"인테리어 투자 의향층",코멘트:"20만원대 중간가격대 공략. 디자인 독창성으로 차별화"},
+  {순위:9,브랜드:"루씨에어",이름:"코타라 실링팬 137cm",유형:"실링팬",가격:620000,할인:0,평점:4.8,리뷰:153,특장점:["에어서큘레이터 겸용","3colors","여름 필수"],소비자:"거실 인테리어 투자층",코멘트:"조명+팬 복합기능. 여름 전 4~5월 수요 급증 시즌 공략"},
+  {순위:10,브랜드:"홈비",이름:"브렐로 플로어 장스탠드 무드램프",유형:"플로어",가격:52900,할인:37,평점:4.9,리뷰:1671,특장점:["37% 할인","무드램프","1,671 리뷰 신뢰"],소비자:"가성비 추구 인테리어 입문층",코멘트:"5만원대+37%할인+1,671리뷰 = 강력한 구매 트리거 조합"},
+  {순위:11,브랜드:"스피아노",이름:"제프리 LED 안티블루라이트 책상스탠드",유형:"데스크",가격:57900,할인:20,평점:4.9,리뷰:3003,특장점:["안티블루라이트","LED","오늘의집 단독","50/80cm 선택"],소비자:"학생·재택근무자·눈 건강 관심층",코멘트:"기능성(눈 보호) 키워드가 구매 결정 핵심. 리뷰 3,003 폭발적"},
+  {순위:12,브랜드:"누노즈",이름:"페이퍼램프 한지조명",유형:"한지",가격:34900,할인:0,평점:4.9,리뷰:1577,특장점:["한지 천연 소재","따뜻한 확산광","국산"],소비자:"웰니스·K-감성·인테리어 관심층",코멘트:"3.5만원 저가+한지 감성. 선물용 수요도 높음. 장기 스테디셀러"},
+  {순위:13,브랜드:"루씨에어",이름:"레이더3 실링팬 132cm 6colors",유형:"실링팬",가격:550000,할인:0,평점:4.9,리뷰:642,특장점:["6가지 컬러","132cm 대형","여름 필수"],소비자:"인테리어 완성도 추구층",코멘트:"6colors 강점. 봄·여름 시즌성 강해 선제 재고 확보 중요"},
+  {순위:14,브랜드:"유투조명",이름:"꽈배기 장스탠드 미드센추리 모던",유형:"플로어",가격:98000,할인:42,평점:4.9,리뷰:1213,특장점:["독창적 꽈배기 형태","미드센추리","3색 변환","42% 할인"],소비자:"뉴트로 감성 2030",코멘트:"'꽈배기'라는 독창적 형태명이 검색·바이럴 원동력. 네이밍 전략 배울 것"},
+  {순위:17,브랜드:"레나에너지",이름:"북유럽 플로어 장스탠드 4colors",유형:"플로어",가격:27800,할인:60,평점:4.8,리뷰:6967,특장점:["60% 대폭 할인","27,800원","4colors","리모컨"],소비자:"가격 민감 대중 소비자",코멘트:"60%할인+2.7만원+6,967리뷰. 볼륨 최강자. 마진 낮지만 트래픽 획득용"},
+  {순위:18,브랜드:"일광전구",이름:"SNOWMAN8 Portable 7Colors",유형:"포터블",가격:40000,할인:0,평점:4.9,리뷰:1408,특장점:["7colors","포터블","충전식","눈사람 형태"],소비자:"선물·캠핑·감성 인테리어층",코멘트:"눈사람 캐릭터 형태+7colors. 선물 수요 높고 리뷰 1,408로 검증"},
+  {순위:19,브랜드:"드엘리사",이름:"미드센추리 플로어 조명 12types",유형:"플로어",가격:279000,할인:29,평점:4.8,리뷰:1622,특장점:["12가지 타입","스마트전구 증정","미드센추리"],소비자:"인테리어 투자 의향층",코멘트:"12types 선택지와 사은품 전략이 1,622리뷰 견인. 선택의 폭 넓히기 전략 유효"},
+  {순위:20,브랜드:"아우어룸",이름:"머쉬룸 장스탠드 7colors",유형:"플로어",가격:149000,할인:31,평점:4.8,리뷰:10681,특장점:["머쉬룸 형태","7colors","국내 자체제작","전구 증정"],소비자:"SNS 인테리어 관심 전 연령",코멘트:"리뷰 10,681개 압도적 1위. 머쉬룸+7colors+국산+전구증정 전략이 완벽"},
+  {순위:21,브랜드:"일광전구",이름:"SNOWMAN15 Portable 3Colors",유형:"포터블",가격:110000,할인:0,평점:4.9,리뷰:588,특장점:["대형 15cm","3colors","포터블","고급형"],소비자:"선물·감성 인테리어층",코멘트:"SNOWMAN 시리즈 확장. 소형(8)→대형(15) 라인업 전략 참고"},
+  {순위:24,브랜드:"아르떼미데",이름:"테티 천장·벽 조명 4color",유형:"벽/천장",가격:86240,할인:28,평점:4.8,리뷰:408,특장점:["해외 명품","벽·천장 겸용","4color"],소비자:"해외 디자인 브랜드 선호층",코멘트:"해외 명품도 8.6만원 중가대면 리뷰 408. 가격 접근성이 판매량 좌우"},
+  {순위:26,브랜드:"투플레이스",이름:"아르코 스틸 실버 플로어 활장 스탠드",유형:"플로어",가격:47900,할인:44,평점:4.6,리뷰:3334,특장점:["길이 조절","스틸 소재","44% 할인","3,334 리뷰"],소비자:"실용·미니멀 인테리어층",코멘트:"4.7만원+44%+3,334리뷰. 가성비 2위. 길이조절 기능 실용성 어필"},
+  {순위:29,브랜드:"투플레이스",이름:"레바 원목 LED 식탁등",유형:"팬던트",가격:112000,할인:34,평점:4.9,리뷰:540,특장점:["원목 소재","식탁 전용","34% 할인","LED"],소비자:"주방·다이닝 인테리어 관심층",코멘트:"원목+LED 펜던트. 식탁 포컬포인트 수요 지속. 원목 프리미엄 포지셔닝"}
+];
+
+const typeColor = {플로어:'tp-f',포터블:'tp-p',데스크:'tp-d',실링팬:'tp-c',한지:'tp-h',팬던트:'tp-pe','벽/천장':'tp-c'};
+const maxR = Math.max(...products.map(p=>p.리뷰));
+const rankClass = r => r===1?'rk1':r===2?'rk2':r===3?'rk3':r<=10?'rk-hot':'rk-n';
+
+// 제품 카드
+const grid = document.getElementById('pcgrid');
+products.forEach(p => {
+  grid.innerHTML += `
+  <div class="pc">
+    <div class="pc-head">
+      <span class="pc-rank ${rankClass(p.순위)}">${p.순위}</span>
+      <span class="pc-type ${typeColor[p.유형]||'tp-f'}">${p.유형}</span>
+    </div>
+    <div class="pc-brand">${p.브랜드}</div>
+    <div class="pc-name">${p.이름}</div>
+    <div class="pc-stats">
+      <div class="pcs"><div class="sv">${p.가격.toLocaleString()}원</div><div class="sl">판매가</div></div>
+      <div class="pcs"><div class="sv">${p.할인>0?p.할인+'%':'-'}</div><div class="sl">할인율</div></div>
+      <div class="pcs"><div class="sv">⭐${p.평점}</div><div class="sl">평점</div></div>
+      <div class="pcs"><div class="sv">${p.리뷰.toLocaleString()}</div><div class="sl">리뷰 수</div></div>
+    </div>
+    <div class="pc-feat">${p.특장점.map(f=>`<span class="ft">${f}</span>`).join('')}</div>
+    <div class="pc-insight">💡 ${p.코멘트}</div>
+  </div>`;
+});
+
+// Scatter chart (가격 vs 리뷰)
+new Chart(document.getElementById('scatterChart'),{
+  type:'bubble',
+  data:{datasets:[{
+    label:'제품',
+    data: products.map(p=>({x:p.가격/10000, y:p.리뷰, r:Math.max(4, Math.sqrt(p.리뷰)/8), label:p.이름.substring(0,8)})),
+    backgroundColor:'rgba(99,102,241,0.6)',
+    borderColor:'#6366f1',
+    borderWidth:1
+  }]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const p=products[ctx.dataIndex]; return `${p.브랜드} | ${p.가격.toLocaleString()}원 | 리뷰 ${p.리뷰.toLocaleString()}`;} }}},
+  scales:{x:{title:{display:true,text:'가격 (만원)'},ticks:{callback:v=>v+'만'}},y:{title:{display:true,text:'리뷰 수'}}}}
+});
+
+// 유형별 평균 리뷰
+const byType = {};
+products.forEach(p=>{ if(!byType[p.유형]) byType[p.유형]=[]; byType[p.유형].push(p.리뷰); });
+const typeAvg = Object.entries(byType).map(([k,v])=>({type:k, avg:Math.round(v.reduce((a,b)=>a+b,0)/v.length)})).sort((a,b)=>b.avg-a.avg);
+new Chart(document.getElementById('typeReviewChart'),{
+  type:'bar',
+  data:{labels:typeAvg.map(t=>t.type), datasets:[{data:typeAvg.map(t=>t.avg), backgroundColor:['#6366f1','#8b5cf6','#a78bfa','#c4b5fd','#ddd6fe','#ede9fe'], borderRadius:8}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}
+});
+
+// MD 테이블
+const mdData = [
+  {이름:"아우어룸 머쉬룸 7colors",가격:"14.9만",리뷰파워:"🔴 초강력",할인:"보통",재구매:"높음",소비자:"SNS 인테리어 전연령",코멘트:"리뷰 1위. 7colors+국산이 핵심. 즉시 벤치마킹 필수"},
+  {이름:"레나에너지 북유럽 4colors",가격:"2.7만",리뷰파워:"🔴 초강력",할인:"60%↑",재구매:"중",소비자:"가격민감 대중",코멘트:"볼륨 최강. 마진 낮지만 트래픽·리뷰 획득 전략"},
+  {이름:"스피아노 제프리 LED",가격:"5.8만",리뷰파워:"🔴 강력",할인:"20%",재구매:"높음",소비자:"재택근무·학생",코멘트:"기능성(눈보호) 특화. 책상 스탠드 카테고리 1위"},
+  {이름:"일광전구 SNOWMAN8",가격:"4.0만",리뷰파워:"🟠 강",할인:"없음",재구매:"높음",소비자:"선물·캠핑층",코멘트:"포터블 감성 제품. 할인없이도 꾸준한 판매 = 충성 수요"},
+  {이름:"투플레이스 아르코",가격:"4.7만",리뷰파워:"🟠 강",할인:"44%",재구매:"중",소비자:"실용 미니멀층",코멘트:"길이조절 기능+44% 할인. 가성비 2위"},
+  {이름:"누노즈 한지조명",가격:"3.5만",리뷰파워:"🟠 강",할인:"없음",재구매:"중",소비자:"웰니스·K감성층",코멘트:"할인없이 3.5만원. 소재 감성이 장기 팬덤 형성"},
+  {이름:"드엘리사 미드센추리 12types",가격:"27.9만",리뷰파워:"🟡 중강",할인:"29%",재구매:"중",소비자:"인테리어 투자층",코멘트:"12types 선택폭+사은품이 경쟁력. 중가대 디자인 리더"},
+  {이름:"유투조명 꽈배기",가격:"9.8만",리뷰파워:"🟡 중강",할인:"42%",재구매:"중",소비자:"뉴트로 2030",코멘트:"독창 형태명 바이럴. 네이밍 전략 참고"},
+  {이름:"플로스 루미네이터",가격:"153만",리뷰파워:"🔵 낮음",할인:"10%",재구매:"낮음",소비자:"고소득 디자인층",코멘트:"명품 브랜드력이 판매 동력. 리뷰 적어도 존재감"},
+  {이름:"홈비 브렐로 무드램프",가격:"5.3만",리뷰파워:"🟠 강",할인:"37%",재구매:"중",소비자:"인테리어 입문층",코멘트:"5만원+37%+1,671리뷰. 구매트리거 최적 조합"},
+];
+const mdtb = document.getElementById('mdtable');
+mdData.forEach(d=>{
+  mdtb.innerHTML += `<tr>
+    <td style="font-weight:600;font-size:0.82rem;">${d.이름}</td>
+    <td>${d.가격}</td>
+    <td>${d.리뷰파워}</td>
+    <td>${d.할인}</td>
+    <td>${d.재구매}</td>
+    <td style="font-size:0.77rem;color:#666;">${d.소비자}</td>
+    <td style="font-size:0.77rem;color:#555;">${d.코멘트}</td>
+  </tr>`;
+});
+</script>
 </body>
 </html>

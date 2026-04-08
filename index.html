@@ -117,7 +117,54 @@
     .adv ul{font-size:0.81rem;color:#555;line-height:1.9;padding-left:16px;}
 
     footer{text-align:center;padding:28px;color:#aaa;font-size:0.73rem;}
-    @media(max-width:700px){.kpi4,.pcgrid,.kp-grid{grid-template-columns:1fr 1fr;}.g2{grid-template-columns:1fr;}}
+
+    /* ── 반응형: 태블릿 / 큰 폰 (≤700px) ── */
+    @media(max-width:700px){
+      header{padding:32px 20px 26px;}
+      header h1{font-size:1.6rem;}
+      .hmeta{gap:10px;}
+      .hmb{padding:8px 12px;}
+      .wrap{padding:24px 16px;}
+      .s{padding:20px 18px;}
+      .kpi4{grid-template-columns:1fr 1fr;}
+      .pcgrid{grid-template-columns:1fr 1fr;}
+      .kp-grid{grid-template-columns:1fr 1fr;}
+      .g2{grid-template-columns:1fr;}
+      .keyprod{padding:24px 20px;}
+      .kp-price{font-size:1.1rem;}
+      .kp-card.top{padding-top:30px;}
+    }
+
+    /* ── 반응형: 스마트폰 (≤480px) ── */
+    @media(max-width:480px){
+      header{padding:22px 16px 20px;}
+      header h1{font-size:1.2rem;word-break:keep-all;}
+      header p{font-size:0.8rem;}
+      .badge{font-size:0.68rem;padding:3px 10px;}
+      .hmeta{gap:8px;}
+      .hmb{padding:7px 10px;flex:1 1 calc(50% - 4px);}
+      .hmb .l{font-size:0.64rem;}
+      .hmb .v{font-size:0.8rem;}
+      .wrap{padding:16px 12px;}
+      .s{padding:16px 14px;}
+      .st{font-size:0.9rem;}
+      .kpi4{grid-template-columns:1fr 1fr;gap:10px;}
+      .kbox{padding:14px 10px;}
+      .kbox .n{font-size:1.4rem;}
+      .pcgrid{grid-template-columns:1fr;}
+      .kp-grid{grid-template-columns:1fr;}
+      .keyprod{padding:20px 16px;}
+      .keyprod h2{font-size:1.1rem;}
+      .kp-card.top{padding-top:34px;}
+      .kp-price{font-size:1rem;}
+      .cw,.cw.t{height:200px;}
+      .sbar-head{flex-direction:column;gap:2px;}
+      .sbar-head span:last-child{align-self:flex-end;font-size:0.72rem;}
+      .mdt{font-size:0.76rem;}
+      .mdt th,.mdt td{padding:7px 8px;}
+      .adv{padding:14px 16px;}
+      footer{padding:20px;font-size:0.68rem;}
+    }
   </style>
 </head>
 <body>

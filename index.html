@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Study - Sang-arm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .menu-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .menu-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+        .menu-item h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .menu-item p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .files {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .files h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .file-link {
+            display: block;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: white;
+            border-left: 3px solid #667eea;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .file-link:hover {
+            background: #f0f4ff;
+            padding-left: 20px;
+        }
+        .footer {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Claude Study</h1>
+        <p class="subtitle">Sang-arm Workshop Materials</p>
+
+        <div class="menu">
+            <a href="1-설치가이드/" class="menu-item">
+                <h3>📖 설치가이드</h3>
+                <p>설치 및 시작하기</p>
+            </a>
+            <a href="2-체험용-샘플/" class="menu-item">
+                <h3>🎯 체험용 샘플</h3>
+                <p>실제 예제 보기</p>
+            </a>
+            <a href="3-도구만들기/" class="menu-item">
+                <h3>🛠️ 도구만들기</h3>
+                <p>커스텀 도구 만드는법</p>
+            </a>
+            <a href="4-자동화/" class="menu-item">
+                <h3>⚙️ 자동화</h3>
+                <p>자동화 기법 배우기</p>
+            </a>
+            <a href="5-영상만들기/" class="menu-item">
+                <h3>🎬 영상만들기</h3>
+                <p>영상 제작 가이드</p>
+            </a>
+        </div>
+
+        <div class="files">
+            <h3>📄 주요 문서</h3>
+            <a href="시작하기.txt" class="file-link">시작하기.txt</a>
+            <a href="치트시트.txt" class="file-link">치트시트.txt</a>
+            <a href="lumir-사이트분석보고서.html" class="file-link">Lumir 사이트 분석 보고서</a>
+            <a href="오늘의집-MD분석보고서.html" class="file-link">오늘의집 MD 분석 보고서</a>
+            <a href="오늘의집-조명-시장분석.html" class="file-link">오늘의집 조명 시장 분석</a>
+            <a href="마케팅-업무흐름.svg" class="file-link">마케팅 업무 흐름</a>
+        </div>
+
+        <div class="footer">
+            <p>✨ MOA-WEB-DB Claude Study Repository</p>
+            <p><a href="https://github.com/MOA-WEB-DB/Claude-Study-Sang-arm" style="color: #667eea; text-decoration: none;">GitHub 저장소 보기</a></p>
+        </div>
+    </div>
+</body>
+</html>

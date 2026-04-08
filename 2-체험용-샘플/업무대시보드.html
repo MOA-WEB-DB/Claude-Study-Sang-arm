@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>업무 대시보드</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #21253a;
+      --border: #2e3347;
+      --text: #e2e8f0;
+      --text-muted: #8892a4;
+      --accent: #6c8eff;
+      --accent2: #a78bfa;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --orange: #fb923c;
+    }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Pretendard', 'Malgun Gothic', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    header .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+    }
+    header .logo span { color: var(--text); font-weight: 400; }
+    header .date-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    header .date-badge strong { color: var(--accent); margin-left: 6px; }
+
+    /* ── 레이아웃 ── */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 24px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      grid-template-rows: auto auto;
+      gap: 20px;
+    }
+
+    /* ── 카드 ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+    .icon-blue { background: rgba(108,142,255,0.15); }
+    .icon-purple { background: rgba(167,139,250,0.15); }
+    .icon-green { background: rgba(52,211,153,0.15); }
+    .icon-yellow { background: rgba(251,191,36,0.15); }
+
+    .card-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3px 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── 할 일 목록 ── */
+    .todo-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+      max-height: 340px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .todo-list::-webkit-scrollbar { width: 4px; }
+    .todo-list::-webkit-scrollbar-track { background: transparent; }
+    .todo-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .todo-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s, opacity 0.2s;
+    }
+    .todo-item:hover { border-color: var(--accent); }
+    .todo-item.done {
+      opacity: 0.45;
+    }
+    .todo-item.done .todo-text { text-decoration: line-through; color: var(--text-muted); }
+
+    .todo-item input[type="checkbox"] { display: none; }
+
+    .todo-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .todo-item.done .todo-check {
+      background: var(--green);
+      border-color: var(--green);
+    }
+    .todo-item.done .todo-check::after {
+      content: '✓';
+      color: #0f1117;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .todo-content { flex: 1; min-width: 0; }
+    .todo-text { font-size: 0.88rem; color: var(--text); line-height: 1.4; }
+    .todo-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 5px;
+    }
+
+    .priority-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .priority-high { background: rgba(248,113,113,0.15); color: var(--red); }
+    .priority-mid  { background: rgba(251,191,36,0.15);  color: var(--yellow); }
+    .priority-low  { background: rgba(52,211,153,0.15);  color: var(--green); }
+
+    .assignee {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: var(--border);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    /* ── 할 일 추가 ── */
+    .add-todo-area {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+    .add-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .add-row input[type="text"] {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 0.85rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .add-row input[type="text"]::placeholder { color: var(--text-muted); }
+    .add-row input[type="text"]:focus { border-color: var(--accent); }
+
+    .add-options {
+      display: flex;
+      gap: 8px;
+    }
+    .add-options select {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .add-options select:focus { border-color: var(--accent); }
+
+    .btn-add {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .btn-add:hover { background: #5a7eff; }
+    .btn-add:active { transform: scale(0.97); }
+
+    /* ── 이번 주 일정 ── */
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .day-col {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
+      min-height: 130px;
+    }
+    .day-col.today {
+      border-color: var(--accent);
+      background: rgba(108,142,255,0.06);
+    }
+    .day-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .day-date {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .day-col.today .day-date { color: var(--accent); }
+    .day-col.today .today-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    .event {
+      font-size: 0.73rem;
+      padding: 4px 8px;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+    .event-blue   { background: rgba(108,142,255,0.18); color: #93b4ff; }
+    .event-purple { background: rgba(167,139,250,0.18); color: #c4b5fd; }
+    .event-green  { background: rgba(52,211,153,0.18);  color: #6ee7b7; }
+    .event-yellow { background: rgba(251,191,36,0.18);  color: #fcd34d; }
+    .event-red    { background: rgba(248,113,113,0.18); color: #fca5a5; }
+
+    /* ── 프로젝트 진행률 ── */
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    .project-item {}
+    .project-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    .project-name { font-size: 0.87rem; font-weight: 500; }
+    .project-pct {
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .progress-bar {
+      height: 7px;
+      background: var(--surface2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── 매출 현황 ── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .kpi-mini {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+    }
+    .kpi-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; }
+    .kpi-value { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .kpi-sub   { font-size: 0.7rem; color: var(--text-muted); margin-top: 3px; }
+    .kpi-value.blue   { color: var(--accent); }
+    .kpi-value.green  { color: var(--green); }
+    .kpi-value.purple { color: var(--accent2); }
+
+    .chart-area { position: relative; height: 200px; }
+
+    /* ── 인사이트 태그 ── */
+    .insights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 16px;
+    }
+    .insight-tag {
+      font-size: 0.75rem;
+      padding: 5px 11px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      background: var(--surface2);
+    }
+    .insight-tag strong { color: var(--text); }
+
+    /* ── 스팬 배치 ── */
+    .col-left  { grid-column: 1; }
+    .col-right { grid-column: 2; }
+    .col-full  { grid-column: 1 / -1; }
+    .row-1 { grid-row: 1; }
+    .row-2 { grid-row: 2; }
+    .row-3 { grid-row: 3; }
+
+    /* 프로그레스 차트 래퍼 */
+    .chart-projects { position: relative; height: 180px; margin-top: 8px; }
+
+    /* 반응형 */
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .col-right { grid-column: 1; }
+      .col-full  { grid-column: 1; }
+      .schedule-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📊 <span>마케팅팀</span> 업무 대시보드</div>
+  <div class="date-badge" id="headerDate"></div>
+</header>
+
+<div class="container">
+
+  <!-- ① 오늘 할 일 -->
+  <div class="card col-left row-1" style="grid-row: 1 / 3;">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="icon icon-blue">✅</div>
+        오늘 할 일
+      </div>
+      <div class="card-badge" id="todo-count">0 / 0</div>
+    </div>
+
+    <ul class="todo-list" id="todo-list"></ul>
+
+    <div class="add-todo-area">
+      <div class="add-row">
+        <input type="text" id="new-task-text" placeholder="새 할 일 입력..." />
+        <button class="btn-add" onclick="addTodo()">+ 추가</button>
+      </div>
+      <div class="add-options">
+        <select id="new-priority">
+          <option value="high">🔴 긴급</option>
+          <option value="mid" selected>🟡 보통</option>
+          <option value="low">🟢 여유</option>
+        </select>
+        <input type="text" id="new-assignee" placeholder="담당자" style="flex:1; max-width: 100px;" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 프로젝트 진행률 + 매출 현황 -->
+  <div class="card col-right row-1">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="icon icon-purple">🚀</div>
+        프로젝트 진행률
+      </div>
+    </div>
+
+    <div class="project-list">
+      <div class="project-item">
+        <div class="project-row">
+          <span class="project-name">SNS 광고 캠페인 (영상광고 제작)</span>
+          <span class="project-pct" style="color: var(--green);">75%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:75%; background: linear-gradient(90deg, #34d399, #6ee7b7);"></div>
+        </div>
+      </div>
+      <div class="project-item">
+        <div class="project-row">
+          <span class="project-name">3월 프로모션 기획</span>
+          <span class="project-pct" style="color: var(--accent);">90%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:90%; background: linear-gradient(90deg, #6c8eff, #93b4ff);"></div>
+        </div>
+      </div>
+      <div class="project-item">
+        <div class="project-row">
+          <span class="project-name">인플루언서 협업 (푸드스타일리스트)</span>
+          <span class="project-pct" style="color: var(--yellow);">40%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:40%; background: linear-gradient(90deg, #fbbf24, #fcd34d);"></div>
+        </div>
+      </div>
+      <div class="project-item">
+        <div class="project-row">
+          <span class="project-name">4월 신제품 런칭 준비</span>
+          <span class="project-pct" style="color: var(--red);">25%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:25%; background: linear-gradient(90deg, #f87171, #fca5a5);"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position: relative; height: 170px; margin-top: 4px;">
+      <canvas id="projectChart"></canvas>
+    </div>
+  </div>
+
+  <!-- ③ 이번 주 일정 -->
+  <div class="card col-right row-2">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="icon icon-green">📅</div>
+        이번 주 일정
+      </div>
+      <div class="card-badge">3/30 – 4/4</div>
+    </div>
+
+    <div class="schedule-grid">
+      <div class="day-col">
+        <div class="day-label">MON</div>
+        <div class="day-date">30</div>
+        <div class="event event-blue">주간 팀 미팅</div>
+        <div class="event event-purple">SNS 성과 리뷰</div>
+      </div>
+      <div class="day-col today">
+        <div class="day-label">TUE</div>
+        <div class="day-date">1<span class="today-dot"></span></div>
+        <div class="event event-blue">영상 광고 검수</div>
+        <div class="event event-yellow">기획안 검토</div>
+        <div class="event event-green">캠페인 데이터 분석</div>
+      </div>
+      <div class="day-col">
+        <div class="day-label">WED</div>
+        <div class="day-date">2</div>
+        <div class="event event-red">프로모션 기획안 제출 마감</div>
+        <div class="event event-purple">블로그 콘텐츠 발행</div>
+      </div>
+      <div class="day-col">
+        <div class="day-label">THU</div>
+        <div class="day-date">3</div>
+        <div class="event event-blue">경쟁사 분석 보고</div>
+        <div class="event event-yellow">예산 조정 회의</div>
+      </div>
+      <div class="day-col">
+        <div class="day-label">FRI</div>
+        <div class="day-date">4</div>
+        <div class="event event-green">인플루언서 미팅 일정 확정</div>
+        <div class="event event-purple">주간 보고</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 매출 현황 -->
+  <div class="card col-full row-3">
+    <div class="card-header">
+      <div class="card-title">
+        <div class="icon icon-yellow">💰</div>
+        매출 현황 요약
+      </div>
+      <div class="card-badge">2026년 1–2월 · 30건 거래</div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-mini">
+        <div class="kpi-label">총 매출액</div>
+        <div class="kpi-value blue">5,642만원</div>
+        <div class="kpi-sub">56,426,000원</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-label">총 판매 수량</div>
+        <div class="kpi-value green">1,412개</div>
+        <div class="kpi-sub">6개 제품</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-label">최고 매출 제품</div>
+        <div class="kpi-value purple">무선 이어폰</div>
+        <div class="kpi-sub">전체 매출의 51%</div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+      <div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;">제품별 매출</div>
+        <div class="chart-area">
+          <canvas id="salesProductChart"></canvas>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;">카테고리 비중</div>
+        <div class="chart-area">
+          <canvas id="salesCategoryChart"></canvas>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;">지역별 매출</div>
+        <div class="chart-area">
+          <canvas id="salesRegionChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="insights">
+      <div class="insight-tag">📈 <strong>2월 무선이어폰</strong> 매출 증가 추세</div>
+      <div class="insight-tag">🏆 <strong>서울</strong> 매출 비중 57%</div>
+      <div class="insight-tag">⚡ <strong>전자기기</strong> 카테고리 73% 점유</div>
+      <div class="insight-tag">💡 에코백 <strong>번들 전략</strong> 검토 필요</div>
+      <div class="insight-tag">🎯 부산·대구 <strong>추가 공략</strong> 여지 있음</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ─── 날짜 표시 ─── */
+  const now = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  document.getElementById('headerDate').innerHTML =
+    `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 &nbsp;<strong>${days[now.getDay()]}요일</strong>`;
+
+  /* ─── 할 일 데이터 ─── */
+  const STORAGE_KEY = 'dashboard_todos_v1';
+  const DEFAULT_TODOS = [
+    { id: 1, text: '영상 광고 3개 추가 제작 검수 및 피드백', priority: 'high', assignee: '박사원', done: false },
+    { id: 2, text: '3월 프로모션 기획안 최종 검토', priority: 'high', assignee: '김대리', done: false },
+    { id: 3, text: '인플루언서 미팅 준비 (푸드스타일리스트)', priority: 'mid', assignee: '이과장', done: false },
+    { id: 4, text: '경쟁사 C사 신규 캠페인 분석 보고서 확인', priority: 'mid', assignee: '박사원', done: false },
+    { id: 5, text: '4월 신제품 티저 콘텐츠 기획 시작', priority: 'mid', assignee: '', done: false },
+    { id: 6, text: '예산 조정 요청서 작성 (영상 제작비 +200만원)', priority: 'low', assignee: '정팀장', done: false },
+    { id: 7, text: '다음 주 회의 아젠다 준비 (4/7 월)', priority: 'low', assignee: '', done: false },
+  ];
+
+  function loadTodos() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : DEFAULT_TODOS;
+    } catch { return DEFAULT_TODOS; }
+  }
+  function saveTodos(todos) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  }
+
+  let todos = loadTodos();
+  let nextId = Math.max(...todos.map(t => t.id), 0) + 1;
+
+  const priorityLabel = { high: '긴급', mid: '보통', low: '여유' };
+  const priorityClass = { high: 'priority-high', mid: 'priority-mid', low: 'priority-low' };
+
+  function renderTodos() {
+    const list = document.getElementById('todo-list');
+    const sorted = [...todos].sort((a, b) => {
+      const order = { high: 0, mid: 1, low: 2 };
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      return order[a.priority] - order[b.priority];
+    });
+
+    list.innerHTML = sorted.map(t => `
+      <li class="todo-item ${t.done ? 'done' : ''}" onclick="toggleTodo(${t.id})">
+        <div class="todo-check"></div>
+        <div class="todo-content">
+          <div class="todo-text">${escHtml(t.text)}</div>
+          <div class="todo-meta">
+            <span class="priority-badge ${priorityClass[t.priority]}">${priorityLabel[t.priority]}</span>
+            ${t.assignee ? `<span class="assignee">${escHtml(t.assignee)}</span>` : ''}
+          </div>
+        </div>
+      </li>
+    `).join('');
+
+    const done = todos.filter(t => t.done).length;
+    document.getElementById('todo-count').textContent = `${done} / ${todos.length} 완료`;
+  }
+
+  function toggleTodo(id) {
+    todos = todos.map(t => t.id === id ? { ...t, done: !t.done } : t);
+    saveTodos(todos);
+    renderTodos();
+  }
+
+  function addTodo() {
+    const textEl = document.getElementById('new-task-text');
+    const text = textEl.value.trim();
+    if (!text) { textEl.focus(); return; }
+    const priority = document.getElementById('new-priority').value;
+    const assignee = document.getElementById('new-assignee').value.trim();
+    todos.push({ id: nextId++, text, priority, assignee, done: false });
+    saveTodos(todos);
+    renderTodos();
+    textEl.value = '';
+    document.getElementById('new-assignee').value = '';
+    textEl.focus();
+  }
+
+  document.getElementById('new-task-text').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTodo();
+  });
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  renderTodos();
+
+  /* ─── 차트 공통 설정 ─── */
+  Chart.defaults.color = '#8892a4';
+  Chart.defaults.font.family = "'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif";
+  Chart.defaults.font.size = 11;
+
+  const accentColors = [
+    'rgba(108,142,255,0.85)',
+    'rgba(167,139,250,0.85)',
+    'rgba(52,211,153,0.85)',
+    'rgba(251,191,36,0.85)',
+    'rgba(251,146,60,0.85)',
+    'rgba(248,113,113,0.85)',
+  ];
+
+  /* ─── 프로젝트 진행률 레이더 차트 ─── */
+  new Chart(document.getElementById('projectChart'), {
+    type: 'radar',
+    data: {
+      labels: ['SNS 캠페인', '3월 프로모션', '인플루언서 협업', '신제품 런칭', '콘텐츠 발행', '예산 관리'],
+      datasets: [{
+        label: '진행률',
+        data: [75, 90, 40, 25, 65, 55],
+        backgroundColor: 'rgba(108,142,255,0.15)',
+        borderColor: 'rgba(108,142,255,0.8)',
+        borderWidth: 2,
+        pointBackgroundColor: '#6c8eff',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { display: false, stepSize: 25 },
+          grid: { color: 'rgba(255,255,255,0.07)' },
+          angleLines: { color: 'rgba(255,255,255,0.07)' },
+          pointLabels: { font: { size: 10 }, color: '#8892a4' },
+        }
+      }
+    }
+  });
+
+  /* ─── 매출: 제품별 (가로 막대) ─── */
+  new Chart(document.getElementById('salesProductChart'), {
+    type: 'bar',
+    data: {
+      labels: ['무선 이어폰', '텀블러', '블루투스 스피커', '보조배터리', '에코백', '무선 충전기'],
+      datasets: [{
+        data: [28836000, 11525000, 9600000, 9030000, 6165000, 5850000],
+        backgroundColor: accentColors,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { callback: v => (v/10000).toLocaleString() + '만' },
+          border: { display: false }
+        },
+        y: {
+          grid: { display: false },
+          border: { display: false }
+        }
+      }
+    }
+  });
+
+  /* ─── 매출: 카테고리 도넛 ─── */
+  new Chart(document.getElementById('salesCategoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['전자기기', '생활용품'],
+      datasets: [{
+        data: [41316000, 15109000],
+        backgroundColor: ['rgba(108,142,255,0.85)', 'rgba(52,211,153,0.85)'],
+        borderWidth: 0,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14 } },
+        tooltip: { callbacks: { label: ctx => ' ' + (ctx.parsed/10000).toLocaleString() + '만원' } }
+      },
+      cutout: '62%',
+    }
+  });
+
+  /* ─── 매출: 지역별 (막대) ─── */
+  new Chart(document.getElementById('salesRegionChart'), {
+    type: 'bar',
+    data: {
+      labels: ['서울', '부산', '대구'],
+      datasets: [{
+        data: [32049000, 13085000, 11292000],
+        backgroundColor: ['rgba(108,142,255,0.85)', 'rgba(167,139,250,0.85)', 'rgba(52,211,153,0.85)'],
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { callback: v => (v/10000).toLocaleString() + '만' },
+          border: { display: false }
+        },
+        x: { grid: { display: false }, border: { display: false } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

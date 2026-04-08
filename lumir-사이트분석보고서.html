@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUMIR 사이트 분석 보고서</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #f7f7f5; color: #222; line-height: 1.7; }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 52px 40px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 40px);
+    }
+    .header-inner { max-width: 1000px; margin: 0 auto; position: relative; }
+    .header-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 14px; font-size: 0.78rem; letter-spacing: 2px; color: #ccc; margin-bottom: 16px; }
+    header h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
+    header h1 span { color: #d4af6a; }
+    header p { color: #aaa; font-size: 0.95rem; }
+    .header-meta { display: flex; gap: 24px; margin-top: 24px; flex-wrap: wrap; }
+    .meta-item { background: rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 18px; }
+    .meta-item .label { font-size: 0.72rem; color: #888; letter-spacing: 1px; text-transform: uppercase; }
+    .meta-item .value { font-size: 0.9rem; color: #eee; font-weight: 500; margin-top: 2px; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+
+    /* Score Card */
+    .score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+    .score-card { background: white; border-radius: 14px; padding: 22px 18px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
+    .score-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+    .score-card.green::after { background: #22c55e; }
+    .score-card.blue::after { background: #3b82f6; }
+    .score-card.yellow::after { background: #f59e0b; }
+    .score-card.red::after { background: #ef4444; }
+    .score-num { font-size: 2.4rem; font-weight: 800; line-height: 1; }
+    .score-card.green .score-num { color: #22c55e; }
+    .score-card.blue .score-num { color: #3b82f6; }
+    .score-card.yellow .score-num { color: #f59e0b; }
+    .score-card.red .score-num { color: #ef4444; }
+    .score-label { font-size: 0.82rem; color: #666; margin-top: 6px; }
+
+    /* Section */
+    .section { background: white; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+    .section-title { font-size: 1.15rem; font-weight: 700; color: #111; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .section-title .icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .icon-brand { background: #fef3c7; }
+    .icon-design { background: #ede9fe; }
+    .icon-ux { background: #dbeafe; }
+    .icon-tech { background: #dcfce7; }
+    .icon-marketing { background: #fce7f3; }
+    .icon-improve { background: #fee2e2; }
+
+    /* Two col */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* Tag list */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 500; }
+    .tag-dark { background: #111; color: white; }
+    .tag-gray { background: #f3f4f6; color: #444; }
+    .tag-green { background: #dcfce7; color: #166534; }
+    .tag-blue { background: #dbeafe; color: #1e40af; }
+    .tag-yellow { background: #fef3c7; color: #92400e; }
+    .tag-red { background: #fee2e2; color: #991b1b; }
+
+    /* Info rows */
+    .info-table { width: 100%; border-collapse: collapse; }
+    .info-table tr { border-bottom: 1px solid #f3f4f6; }
+    .info-table tr:last-child { border-bottom: none; }
+    .info-table td { padding: 10px 0; font-size: 0.9rem; }
+    .info-table td:first-child { color: #888; width: 130px; font-size: 0.82rem; }
+
+    /* Nav tree */
+    .nav-tree { list-style: none; }
+    .nav-tree > li { margin-bottom: 8px; }
+    .nav-parent { font-weight: 600; font-size: 0.9rem; color: #222; background: #f9fafb; padding: 6px 12px; border-radius: 6px; display: inline-block; }
+    .nav-children { list-style: none; padding-left: 20px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px; }
+    .nav-children li { font-size: 0.8rem; color: #555; background: #f3f4f6; padding: 3px 10px; border-radius: 12px; }
+
+    /* Good/Bad list */
+    .check-list { list-style: none; }
+    .check-list li { padding: 9px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; gap: 10px; }
+    .check-list li:last-child { border-bottom: none; }
+    .check-list li::before { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; margin-top: 1px; }
+    .good::before { content: '✓'; background: #dcfce7; color: #16a34a; }
+    .bad::before { content: '!'; background: #fee2e2; color: #dc2626; }
+    .neutral::before { content: '→'; background: #f3f4f6; color: #666; }
+
+    /* Bar chart */
+    .bar-item { margin-bottom: 12px; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; }
+    .bar-label span:last-child { color: #888; }
+    .bar-bg { background: #f3f4f6; border-radius: 99px; height: 8px; }
+    .bar-fill { height: 8px; border-radius: 99px; }
+
+    /* Tech stack */
+    .tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .tech-item { background: #f9fafb; border-radius: 10px; padding: 12px 14px; border: 1px solid #eee; }
+    .tech-name { font-size: 0.88rem; font-weight: 600; color: #222; }
+    .tech-desc { font-size: 0.75rem; color: #888; margin-top: 2px; }
+    .tech-badge { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 8px; margin-top: 4px; }
+
+    /* Improve cards */
+    .improve-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .improve-card { background: #fff9f9; border: 1px solid #fee2e2; border-radius: 12px; padding: 16px; }
+    .improve-card h4 { font-size: 0.9rem; font-weight: 700; color: #dc2626; margin-bottom: 6px; }
+    .improve-card p { font-size: 0.83rem; color: #555; line-height: 1.6; }
+    .priority { font-size: 0.7rem; padding: 2px 8px; border-radius: 8px; font-weight: 600; margin-left: 6px; }
+    .p-high { background: #fee2e2; color: #991b1b; }
+    .p-mid { background: #fef3c7; color: #92400e; }
+
+    /* Summary box */
+    .summary-box { background: #111; color: white; border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+    .summary-box h2 { font-size: 1.1rem; color: #d4af6a; margin-bottom: 12px; }
+    .summary-box p { font-size: 0.9rem; color: #ccc; line-height: 1.8; }
+
+    footer { text-align: center; padding: 30px; color: #aaa; font-size: 0.78rem; }
+
+    @media (max-width: 700px) {
+      .score-grid { grid-template-columns: repeat(2,1fr); }
+      .two-col, .improve-grid, .tech-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-badge">SITE ANALYSIS REPORT</div>
+    <h1>LUMIR <span>루미르</span> 사이트 분석</h1>
+    <p>lumir.co.kr — 조명 브랜드 공식 쇼핑몰 분석 보고서</p>
+    <div class="header-meta">
+      <div class="meta-item"><div class="label">분석일</div><div class="value">2026. 04. 01</div></div>
+      <div class="meta-item"><div class="label">사이트 URL</div><div class="value">https://lumir.co.kr</div></div>
+      <div class="meta-item"><div class="label">플랫폼</div><div class="value">Cafe24 (이커머스)</div></div>
+      <div class="meta-item"><div class="label">업종</div><div class="value">조명 브랜드 / 라이프스타일</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 종합 점수 -->
+  <div class="score-grid">
+    <div class="score-card green">
+      <div class="score-num">88</div>
+      <div class="score-label">브랜드 아이덴티티</div>
+    </div>
+    <div class="score-card blue">
+      <div class="score-num">82</div>
+      <div class="score-label">디자인 & 비주얼</div>
+    </div>
+    <div class="score-card yellow">
+      <div class="score-num">70</div>
+      <div class="score-label">UX / 사용성</div>
+    </div>
+    <div class="score-card yellow">
+      <div class="score-num">72</div>
+      <div class="score-label">마케팅 전환</div>
+    </div>
+  </div>
+
+  <!-- 종합 요약 -->
+  <div class="summary-box">
+    <h2>📋 종합 요약</h2>
+    <p>
+      루미르(LUMIR)는 <strong style="color:white">"Light up the world"</strong>를 슬로건으로 하는 국내 프리미엄 조명 브랜드입니다.
+      포터블 램프와 테이블 램프를 중심으로 제품 라인업을 갖추고 있으며, 단순한 판매를 넘어 <strong style="color:white">소셜 임팩트(오프그리드 프로젝트)</strong>를 핵심 브랜드 가치로 내세우는 점이 차별점입니다.
+      Cafe24 기반의 이커머스 사이트로, FullPage.js 방식의 풀스크린 스크롤을 채택해 시각적 완성도는 높지만, 모바일 최적화 및 전환율 개선 여지가 있습니다.
+    </p>
+  </div>
+
+  <!-- 기본 정보 -->
+  <div class="section">
+    <div class="section-title"><div class="icon icon-brand">🏷️</div>브랜드 & 기본 정보</div>
+    <div class="two-col">
+      <div>
+        <table class="info-table">
+          <tr><td>브랜드명</td><td>루미르 (LUMIR)</td></tr>
+          <tr><td>슬로건</td><td>Light up the world</td></tr>
+          <tr><td>법인명</td><td>주식회사 루미르</td></tr>
+          <tr><td>대표이사</td><td>박제환</td></tr>
+          <tr><td>소재지</td><td>서울시 성동구 성수일로10길 26</td></tr>
+          <tr><td>사업자번호</td><td>114-87-22532</td></tr>
+        </table>
+      </div>
+      <div>
+        <table class="info-table">
+          <tr><td>호스팅</td><td>Cafe24</td></tr>
+          <tr><td>CS 채널</td><td>카카오톡 채널 + 전화 02-6959-8224</td></tr>
+          <tr><td>운영 시간</td><td>평일 10:00~17:00 (점심 휴무)</td></tr>
+          <tr><td>결제 PG</td><td>KG이니시스 (에스크로)</td></tr>
+          <tr><td>공식 SNS</td><td>Instagram / Blog / Facebook</td></tr>
+          <tr><td>이메일</td><td>hello@lumir.co.kr</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사이트 구조 -->
+  <div class="section">
+    <div class="section-title"><div class="icon icon-ux">🗂️</div>사이트 구조 & 네비게이션</div>
+    <ul class="nav-tree">
+      <li>
+        <span class="nav-parent">SOCIAL IMPACT</span>
+        <ul class="nav-children"><li>About Story</li><li>Mission</li></ul>
+      </li>
+      <li>
+        <span class="nav-parent">PRODUCTS</span>
+        <ul class="nav-children"><li>All</li><li>Portable Lamps</li><li>Table Lamps</li><li>Bulb & Accessories</li><li>Off Grid</li></ul>
+      </li>
+      <li>
+        <span class="nav-parent">PRESS</span>
+      </li>
+      <li>
+        <span class="nav-parent">BOARDS</span>
+        <ul class="nav-children"><li>News</li><li>FAQ</li></ul>
+      </li>
+      <li>
+        <span class="nav-parent">CONTACT</span>
+        <ul class="nav-children"><li>Contact</li><li>Stockist</li></ul>
+      </li>
+      <li>
+        <span class="nav-parent">LOGIN / MY PAGE</span>
+        <ul class="nav-children"><li>주문 내역</li><li>마일리지</li><li>쿠폰</li></ul>
+      </li>
+    </ul>
+    <div style="margin-top:16px">
+      <p style="font-size:0.85rem; color:#666;">홈페이지는 <strong>FullPage.js</strong> 기반 6개 섹션으로 구성된 풀스크린 세로 스크롤 구조입니다.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+        <span class="tag tag-gray">#01 Hero (제품 슬라이더)</span>
+        <span class="tag tag-gray">#02 회원가입 15% 쿠폰</span>
+        <span class="tag tag-gray">#03 소셜 임팩트 (Mission)</span>
+        <span class="tag tag-gray">#04 Light up the World</span>
+        <span class="tag tag-gray">#05 제품 그리드</span>
+        <span class="tag tag-gray">#06 Footer</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <!-- 디자인 분석 -->
+    <div class="section">
+      <div class="section-title"><div class="icon icon-design">🎨</div>디자인 & 비주얼</div>
+      <div class="bar-item">
+        <div class="bar-label"><span>사진 퀄리티</span><span>95/100</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:95%; background:#7c3aed;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label"><span>레이아웃 일관성</span><span>85/100</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:85%; background:#7c3aed;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label"><span>타이포그래피</span><span>80/100</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:80%; background:#7c3aed;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label"><span>색상 시스템</span><span>88/100</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:88%; background:#7c3aed;"></div></div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="tag-list">
+          <span class="tag tag-dark">다크 & 어스 톤</span>
+          <span class="tag tag-gray">미니멀 럭셔리</span>
+          <span class="tag tag-gray">풀스크린 이미지</span>
+          <span class="tag tag-gray">세리프 이탤릭체</span>
+          <span class="tag tag-yellow">골드 포인트 컬러</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- UX 분석 -->
+    <div class="section">
+      <div class="section-title"><div class="icon icon-ux">👆</div>UX & 사용성</div>
+      <ul class="check-list">
+        <li class="good">풀스크린 몰입형 탐색 경험 제공</li>
+        <li class="good">카트·배송 추적·검색 아이콘 상단 고정</li>
+        <li class="good">카카오톡 채널 상담 버튼 노출</li>
+        <li class="good">회원가입 즉시 15% 쿠폰 지급 안내</li>
+        <li class="bad">섹션 간 이동이 마우스 스크롤에만 의존</li>
+        <li class="bad">제품 CTA 버튼이 히어로에 없음</li>
+        <li class="bad">FAQ/고객센터 접근 경로 길음</li>
+        <li class="neutral">FullPage.js 특성상 모바일 조작감 이슈 가능</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 마케팅 & 전환 -->
+  <div class="section">
+    <div class="section-title"><div class="icon icon-marketing">📣</div>마케팅 & 전환 전략</div>
+    <div class="two-col">
+      <div>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:12px; font-weight:600;">적용된 전환 전략</p>
+        <ul class="check-list">
+          <li class="good">회원 가입 즉시 15% 쿠폰 (강력한 가입 유인)</li>
+          <li class="good">Facebook Pixel 전환 추적 적용</li>
+          <li class="good">네이버 쇼핑 유입 추적 (wcs)</li>
+          <li class="good">카카오톡 플러스친구 상담 채널 운영</li>
+          <li class="good">소셜 임팩트 스토리텔링으로 브랜드 차별화</li>
+          <li class="neutral">Instagram/Blog/Facebook SNS 연동</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:12px; font-weight:600;">마케팅 채널 분석</p>
+        <div class="bar-item">
+          <div class="bar-label"><span>SNS (Instagram 중심)</span><span>강점</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:85%; background:#ec4899;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>Facebook Ads 픽셀 추적</span><span>적용</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:75%; background:#3b82f6;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>네이버 검색 광고</span><span>추정</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:65%; background:#22c55e;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>이메일 마케팅</span><span>미확인</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:30%; background:#f59e0b;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기술 스택 -->
+  <div class="section">
+    <div class="section-title"><div class="icon icon-tech">⚙️</div>기술 스택</div>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-name">Cafe24</div>
+        <div class="tech-desc">이커머스 플랫폼 & 호스팅</div>
+        <span class="tech-badge" style="background:#dbeafe; color:#1e40af;">Platform</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-name">FullPage.js</div>
+        <div class="tech-desc">풀스크린 섹션 스크롤 라이브러리</div>
+        <span class="tech-badge" style="background:#dcfce7; color:#166534;">Frontend</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-name">jQuery</div>
+        <div class="tech-desc">DOM 조작 및 애니메이션</div>
+        <span class="tech-badge" style="background:#dcfce7; color:#166534;">Frontend</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-name">Facebook Pixel</div>
+        <div class="tech-desc">전환 이벤트 추적 (AddToCart, PageView)</div>
+        <span class="tech-badge" style="background:#fce7f3; color:#9d174d;">Analytics</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-name">네이버 Analytics</div>
+        <div class="tech-desc">네이버 쇼핑 유입 & 전환 추적</div>
+        <span class="tech-badge" style="background:#fce7f3; color:#9d174d;">Analytics</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-name">YouTube Embed</div>
+        <div class="tech-desc">히어로 섹션 배경 영상 자동재생</div>
+        <span class="tech-badge" style="background:#fee2e2; color:#991b1b;">Media</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-name">KG이니시스</div>
+        <div class="tech-desc">결제 PG / 에스크로 서비스</div>
+        <span class="tech-badge" style="background:#fef3c7; color:#92400e;">Payment</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-name">KakaoTalk</div>
+        <div class="tech-desc">플러스친구 채팅 상담 위젯</div>
+        <span class="tech-badge" style="background:#fef3c7; color:#92400e;">CS</span>
+      </div>
+      <div class="tech-item">
+        <div class="tech-name">Dotslashdash Tracer</div>
+        <div class="tech-desc">사용자 행동 트래킹</div>
+        <span class="tech-badge" style="background:#fce7f3; color:#9d174d;">Analytics</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 개선 제안 -->
+  <div class="section">
+    <div class="section-title"><div class="icon icon-improve">🚀</div>개선 제안</div>
+    <div class="improve-grid">
+      <div class="improve-card">
+        <h4>히어로 CTA 버튼 추가 <span class="priority p-high">높음</span></h4>
+        <p>히어로 슬라이더에 "지금 구매하기" 또는 "제품 보러가기" 버튼이 없어 방문자가 자연스럽게 제품 페이지로 이동하기 어렵습니다. 명확한 CTA 버튼 추가가 필요합니다.</p>
+      </div>
+      <div class="improve-card">
+        <h4>모바일 UX 개선 <span class="priority p-high">높음</span></h4>
+        <p>FullPage.js 풀스크린 방식은 모바일에서 스크롤 조작이 어색할 수 있습니다. 모바일 전용 레이아웃으로 전환하거나 터치 반응성을 개선하는 것이 권장됩니다.</p>
+      </div>
+      <div class="improve-card">
+        <h4>SEO 최적화 <span class="priority p-mid">중간</span></h4>
+        <p>현재 풀스크린 단일 페이지 구조로 검색엔진 크롤링이 어렵습니다. 메타 태그, 구조화 데이터(Schema.org), 제품별 개별 URL 최적화가 필요합니다.</p>
+      </div>
+      <div class="improve-card">
+        <h4>이메일 마케팅 자동화 <span class="priority p-mid">중간</span></h4>
+        <p>회원가입 쿠폰 외 장바구니 이탈 재타겟팅, 구매 후 리뷰 요청 이메일 자동화 시퀀스 도입으로 재구매율을 높일 수 있습니다.</p>
+      </div>
+      <div class="improve-card">
+        <h4>고객 리뷰 & 소셜 증거 강화 <span class="priority p-mid">중간</span></h4>
+        <p>홈페이지 내 고객 후기, 인스타그램 피드 연동, 미디어 노출 로고 배치 등 소셜 프루프 요소가 부족합니다. 신뢰도 향상에 직접적인 효과가 있습니다.</p>
+      </div>
+      <div class="improve-card">
+        <h4>페이지 로딩 속도 개선 <span class="priority p-mid">중간</span></h4>
+        <p>YouTube 배경 영상 및 다수의 서드파티 스크립트(Facebook Pixel, 네이버, 카카오 등)로 인한 초기 로딩 지연이 예상됩니다. Lazy Loading 및 스크립트 지연 로딩 적용을 권장합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 강점 & 차별점 -->
+  <div class="section">
+    <div class="section-title"><div class="icon icon-brand">⭐</div>강점 & 차별점</div>
+    <ul class="check-list">
+      <li class="good"><strong>소셜 임팩트 브랜딩</strong> — "Power the Earth, Empower the World" 미션으로 단순 조명 브랜드를 넘어선 가치 지향 브랜드 포지셔닝</li>
+      <li class="good"><strong>오프그리드 프로젝트</strong> — 전기 인프라가 없는 지역을 위한 조명 보급 활동으로 ESG 가치 실현</li>
+      <li class="good"><strong>프리미엄 제품 사진</strong> — 라이프스타일 감성을 극대화한 고품질 제품 이미지로 브랜드 가치 전달</li>
+      <li class="good"><strong>다양한 제품 라인업</strong> — 포터블 램프, 테이블 램프, 전구/액세서리까지 조명 전문 브랜드로서 완성된 라인업</li>
+      <li class="good"><strong>강력한 가입 유인</strong> — 회원 가입 즉시 15% 할인 쿠폰 제공으로 신규 회원 전환 최적화</li>
+      <li class="good"><strong>멀티 CS 채널</strong> — 카카오톡 채널 + 전화 + 이메일로 고객 접점 다각화</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  분석 보고서 생성일: 2026년 4월 1일 · 대상 사이트: https://lumir.co.kr · Claude Code 생성
+</footer>
+
+</body>
+</html>

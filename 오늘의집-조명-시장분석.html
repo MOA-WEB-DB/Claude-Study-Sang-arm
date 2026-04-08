@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 조명 시장 베스트셀러 분석 | 오늘의집</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:#f5f5f3; color:#222; line-height:1.7; }
+
+    header { background:#1a1a1a; color:white; padding:44px 40px 36px; }
+    .header-inner { max-width:1100px; margin:0 auto; }
+    .badge { display:inline-block; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:4px 14px; font-size:0.75rem; letter-spacing:2px; color:#aaa; margin-bottom:14px; }
+    header h1 { font-size:2rem; font-weight:800; margin-bottom:6px; }
+    header h1 span { color:#f0c040; }
+    header p { color:#888; font-size:0.9rem; }
+    .header-meta { display:flex; gap:20px; margin-top:20px; flex-wrap:wrap; }
+    .meta-box { background:rgba(255,255,255,0.07); border-radius:8px; padding:10px 18px; }
+    .meta-box .lbl { font-size:0.7rem; color:#777; letter-spacing:1px; text-transform:uppercase; }
+    .meta-box .val { font-size:0.88rem; color:#eee; font-weight:600; margin-top:2px; }
+
+    .container { max-width:1100px; margin:0 auto; padding:36px 20px; }
+
+    /* KPI */
+    .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+    .kpi { background:white; border-radius:14px; padding:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:3px solid; }
+    .kpi.k1{border-color:#6366f1;} .kpi.k2{border-color:#f59e0b;} .kpi.k3{border-color:#10b981;} .kpi.k4{border-color:#ef4444;}
+    .kpi-num { font-size:2rem; font-weight:800; }
+    .kpi.k1 .kpi-num{color:#6366f1;} .kpi.k2 .kpi-num{color:#f59e0b;} .kpi.k3 .kpi-num{color:#10b981;} .kpi.k4 .kpi-num{color:#ef4444;}
+    .kpi-lbl { font-size:0.78rem; color:#888; margin-top:4px; }
+
+    /* Section */
+    .sec { background:white; border-radius:16px; padding:28px 30px; margin-bottom:22px; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+    .sec-title { font-size:1.05rem; font-weight:700; color:#111; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+    .sec-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
+
+    /* Table */
+    .tbl { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .tbl thead th { background:#f8f8f6; padding:10px 12px; text-align:left; font-weight:700; font-size:0.78rem; color:#555; letter-spacing:0.5px; border-bottom:2px solid #eee; }
+    .tbl tbody td { padding:10px 12px; border-bottom:1px solid #f3f3f1; vertical-align:middle; }
+    .tbl tbody tr:last-child td { border-bottom:none; }
+    .tbl tbody tr:hover { background:#fafaf8; }
+    .rank-num { width:28px; height:28px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:700; }
+    .r1{background:#ffd700;color:#7a5c00;} .r2{background:#c0c0c0;color:#444;} .r3{background:#cd7f32;color:#fff;}
+    .r-top{background:#fee2e2;color:#dc2626;} .r-normal{background:#f3f4f6;color:#555;}
+    .price-val { font-weight:700; color:#111; }
+    .discount-badge { display:inline-block; background:#fee2e2; color:#dc2626; border-radius:6px; padding:2px 7px; font-size:0.75rem; font-weight:700; }
+    .review-bar { display:flex; align-items:center; gap:6px; }
+    .rb { background:#e0e7ff; border-radius:99px; height:6px; flex:1; min-width:40px; }
+    .rb-fill { background:#6366f1; height:6px; border-radius:99px; }
+    .brand-tag { display:inline-block; background:#f3f4f6; border-radius:6px; padding:2px 8px; font-size:0.75rem; color:#555; }
+    .product-type { display:inline-block; border-radius:12px; padding:2px 9px; font-size:0.73rem; font-weight:600; }
+    .t-floor{background:#dbeafe;color:#1d4ed8;} .t-portable{background:#dcfce7;color:#166534;}
+    .t-desk{background:#fef3c7;color:#92400e;} .t-ceiling{background:#ede9fe;color:#6d28d9;}
+    .t-pendant{background:#fce7f3;color:#9d174d;} .t-hanji{background:#f0fdf4;color:#166534;}
+
+    /* 2-col charts */
+    .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:22px; }
+    .chart-wrap { position:relative; height:260px; }
+    .chart-wrap.tall { height:300px; }
+
+    /* Insight cards */
+    .insight-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .insight-card { border-radius:12px; padding:18px; border-left:4px solid; }
+    .ic1{background:#eff6ff;border-color:#3b82f6;}
+    .ic2{background:#fef9ee;border-color:#f59e0b;}
+    .ic3{background:#f0fdf4;border-color:#22c55e;}
+    .ic4{background:#fdf4ff;border-color:#a855f7;}
+    .ic5{background:#fff1f2;border-color:#f43f5e;}
+    .ic6{background:#f0f9ff;border-color:#0ea5e9;}
+    .insight-card h4 { font-size:0.88rem; font-weight:700; margin-bottom:6px; }
+    .insight-card p { font-size:0.82rem; color:#555; line-height:1.6; }
+
+    /* Tag cloud */
+    .tag-cloud { display:flex; flex-wrap:wrap; gap:8px; }
+    .tag { padding:6px 14px; border-radius:20px; font-size:0.82rem; font-weight:600; }
+
+    /* Highlight box */
+    .highlight { background:#1a1a1a; color:white; border-radius:14px; padding:24px 28px; margin-bottom:22px; }
+    .highlight h3 { color:#f0c040; font-size:0.95rem; margin-bottom:10px; }
+    .highlight p { color:#ccc; font-size:0.88rem; line-height:1.8; }
+
+    footer { text-align:center; padding:28px; color:#aaa; font-size:0.75rem; }
+    @media(max-width:700px){ .kpi-row{grid-template-columns:repeat(2,1fr);} .chart-grid,.insight-grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="badge">MARKET ANALYSIS REPORT</div>
+    <h1>2026 <span>조명</span> 시장 베스트셀러 분석</h1>
+    <p>오늘의집 쇼핑 조명 카테고리 판매순 TOP 29 제품 데이터 기반 · 2026.04.01 기준</p>
+    <div class="header-meta">
+      <div class="meta-box"><div class="lbl">데이터 출처</div><div class="val">오늘의집 쇼핑 (ohou.se)</div></div>
+      <div class="meta-box"><div class="lbl">분석 제품 수</div><div class="val">29개</div></div>
+      <div class="meta-box"><div class="lbl">정렬 기준</div><div class="val">판매순 (주간)</div></div>
+      <div class="meta-box"><div class="lbl">분석일</div><div class="val">2026. 04. 01</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- KPI -->
+  <div class="kpi-row">
+    <div class="kpi k1"><div class="kpi-num">10,681</div><div class="kpi-lbl">최다 리뷰 (아우어룸 머쉬룸)</div></div>
+    <div class="kpi k2"><div class="kpi-num">27,800원</div><div class="kpi-lbl">최저가 베스트셀러</div></div>
+    <div class="kpi k3"><div class="kpi-num">4.8</div><div class="kpi-lbl">평균 평점</div></div>
+    <div class="kpi k4"><div class="kpi-num">60%</div><div class="kpi-lbl">최대 할인율</div></div>
+  </div>
+
+  <!-- 핵심 요약 -->
+  <div class="highlight">
+    <h3>📌 2026 조명 시장 핵심 요약</h3>
+    <p>
+      2026년 조명 시장의 핵심 트렌드는 <strong style="color:white">①머쉬룸·유기적 형태의 무드등 강세</strong>,
+      <strong style="color:white">②포터블(충전식) 조명의 일상화</strong>,
+      <strong style="color:white">③미드센추리 모던 디자인 리바이벌</strong>로 요약됩니다.
+      가격대는 2만~15만원 대의 중저가가 리뷰 수와 판매량을 주도하고 있으며,
+      실링팬·한지조명 등 기능·문화적 차별화 제품도 꾸준한 수요를 보입니다.
+    </p>
+  </div>
+
+  <!-- TOP 29 제품 테이블 -->
+  <div class="sec">
+    <div class="sec-title"><div class="sec-icon" style="background:#fef3c7">📊</div>베스트셀러 TOP 29 전체 데이터</div>
+    <div style="overflow-x:auto;">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>브랜드</th>
+          <th>제품명</th>
+          <th>유형</th>
+          <th>가격</th>
+          <th>할인율</th>
+          <th>평점</th>
+          <th>리뷰 수</th>
+        </tr>
+      </thead>
+      <tbody id="productTable"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- 차트 그리드 -->
+  <div class="chart-grid">
+    <div class="sec">
+      <div class="sec-title"><div class="sec-icon" style="background:#dbeafe">💰</div>가격대별 제품 분포</div>
+      <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+    </div>
+    <div class="sec">
+      <div class="sec-title"><div class="sec-icon" style="background:#dcfce7">📦</div>제품 유형별 비중</div>
+      <div class="chart-wrap"><canvas id="typeChart"></canvas></div>
+    </div>
+    <div class="sec">
+      <div class="sec-title"><div class="sec-icon" style="background:#ede9fe">⭐</div>리뷰 수 TOP 10 제품</div>
+      <div class="chart-wrap tall"><canvas id="reviewChart"></canvas></div>
+    </div>
+    <div class="sec">
+      <div class="sec-title"><div class="sec-icon" style="background:#fce7f3">🏷️</div>브랜드별 등장 횟수</div>
+      <div class="chart-wrap tall"><canvas id="brandChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 디자인 키워드 분석 -->
+  <div class="sec">
+    <div class="sec-title"><div class="sec-icon" style="background:#fef3c7">🎨</div>소비자 어필 디자인 키워드</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;">
+      <div>
+        <p style="font-size:0.8rem; font-weight:700; color:#888; margin-bottom:10px; letter-spacing:1px;">FORM · 형태</p>
+        <div class="tag-cloud">
+          <span class="tag" style="background:#fee2e2;color:#dc2626;">🍄 머쉬룸형</span>
+          <span class="tag" style="background:#fef3c7;color:#92400e;">🌀 꽈배기·곡선</span>
+          <span class="tag" style="background:#dbeafe;color:#1d4ed8;">🏠 미드센추리</span>
+          <span class="tag" style="background:#dcfce7;color:#166534;">📐 미니멀 직선</span>
+          <span class="tag" style="background:#ede9fe;color:#6d28d9;">🌙 구체·라운드</span>
+          <span class="tag" style="background:#f0f9ff;color:#0369a1;">🌿 유기적 곡면</span>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:0.8rem; font-weight:700; color:#888; margin-bottom:10px; letter-spacing:1px;">MATERIAL · 소재</p>
+        <div class="tag-cloud">
+          <span class="tag" style="background:#f3f4f6;color:#374151;">🪵 원목·우드</span>
+          <span class="tag" style="background:#f3f4f6;color:#374151;">🧻 한지·페이퍼</span>
+          <span class="tag" style="background:#f3f4f6;color:#374151;">🔩 스틸·메탈</span>
+          <span class="tag" style="background:#f3f4f6;color:#374151;">🪡 패브릭·천</span>
+          <span class="tag" style="background:#f3f4f6;color:#374151;">🌊 유리·아크릴</span>
+          <span class="tag" style="background:#f3f4f6;color:#374151;">🎭 도자·세라믹</span>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:0.8rem; font-weight:700; color:#888; margin-bottom:10px; letter-spacing:1px;">FUNCTION · 기능</p>
+        <div class="tag-cloud">
+          <span class="tag" style="background:#dcfce7;color:#166534;">🔋 포터블·충전식</span>
+          <span class="tag" style="background:#dcfce7;color:#166534;">🌡️ 색온도 조절</span>
+          <span class="tag" style="background:#dcfce7;color:#166534;">🌀 실링팬 겸용</span>
+          <span class="tag" style="background:#dcfce7;color:#166534;">📡 리모컨 제어</span>
+          <span class="tag" style="background:#dcfce7;color:#166534;">💡 안티블루라이트</span>
+          <span class="tag" style="background:#dcfce7;color:#166534;">🌈 멀티컬러 옵션</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 인사이트 -->
+  <div class="sec">
+    <div class="sec-title"><div class="sec-icon" style="background:#f0fdf4">🔍</div>키 프로덕트 & 시장 인사이트</div>
+    <div class="insight-grid">
+      <div class="insight-card ic1">
+        <h4>🍄 머쉬룸 형태가 시장 지배</h4>
+        <p>아우어룸 머쉬룸 스탠드가 <strong>리뷰 10,681개</strong>로 압도적 1위. 둥글고 부드러운 유기적 형태가 인테리어 SNS 확산과 맞물려 폭발적 인기. 루미르의 YEOLMAE 포터블 램프와 동일한 방향성.</p>
+      </div>
+      <div class="insight-card ic2">
+        <h4>🔋 포터블·무선 조명 급부상</h4>
+        <p>일광전구 SNOWMAN 시리즈 (7Colors·3Colors), 스몰디자인 퀴브 등 <strong>충전식 포터블 조명</strong>이 다수 등장. 테이블 위치 자유도와 캠핑·야외 활용성이 주요 구매 동기.</p>
+      </div>
+      <div class="insight-card ic3">
+        <h4>💸 2~5만원대 초저가가 볼륨 장악</h4>
+        <p>레나에너지 북유럽 장스탠드(<strong>27,800원, 리뷰 6,967</strong>), 투플레이스 아르코(<strong>47,900원, 리뷰 3,334</strong>) 등 초저가 제품이 실질 판매량 주도. 가성비 포지셔닝이 대중 시장 필수 전략.</p>
+      </div>
+      <div class="insight-card ic4">
+        <h4>🏺 미드센추리 모던 리바이벌</h4>
+        <p>유투조명 꽈배기 장스탠드(리뷰 1,213), 드엘리사 미드센추리 12types(리뷰 1,622) 등 <strong>레트로·60~70년대 디자인</strong>이 2030세대에게 뉴트로 감성으로 소비됨.</p>
+      </div>
+      <div class="insight-card ic5">
+        <h4>🌿 한지·전통 소재의 현대적 재해석</h4>
+        <p>누노즈 페이퍼램프 한지조명이 <strong>리뷰 1,577개</strong>로 꾸준한 인기. 자연 소재·따뜻한 빛 확산이 웰니스 인테리어 트렌드와 합치. 국산 수공예 감성의 프리미엄화 가능성.</p>
+      </div>
+      <div class="insight-card ic6">
+        <h4>🌀 실링팬 조명 복합 기능 수요</h4>
+        <p>루씨에어 코타라·레이더3 실링팬이 <strong>50~62만원대 고가에도 판매순위 진입</strong>. 에어서큘레이터+조명 겸용으로 여름철 전력비 절감과 인테리어 완성도를 동시에 충족.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 루미르 전략 제언 -->
+  <div class="sec">
+    <div class="sec-title"><div class="sec-icon" style="background:#fee2e2">💡</div>루미르(LUMIR)를 위한 전략 제언</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div style="background:#f8f9fa; border-radius:12px; padding:18px; border-left:4px solid #6366f1;">
+        <h4 style="font-size:0.88rem; font-weight:700; color:#6366f1; margin-bottom:8px;">✅ 강점 유지 & 강화</h4>
+        <ul style="font-size:0.83rem; color:#444; line-height:2; padding-left:16px;">
+          <li>포터블·충전식 강점 → 시장 트렌드와 완벽 일치</li>
+          <li>머쉬룸·유기적 형태 → YEOLMAE 형태가 트렌드 중심</li>
+          <li>색온도·밝기 조절 기능 → 소비자 핵심 구매 기준</li>
+          <li>프리미엄 감성 포지셔닝 유지 (플로스·아르떼미데 시장 존재)</li>
+        </ul>
+      </div>
+      <div style="background:#f8f9fa; border-radius:12px; padding:18px; border-left:4px solid #f59e0b;">
+        <h4 style="font-size:0.88rem; font-weight:700; color:#f59e0b; margin-bottom:8px;">🚀 신규 기회 포착</h4>
+        <ul style="font-size:0.83rem; color:#444; line-height:2; padding-left:16px;">
+          <li>엔트리 라인 신설 → 5만원대 가성비 제품으로 볼륨 확보</li>
+          <li>멀티컬러 옵션 강화 → 7colors, 12types 트렌드 대응</li>
+          <li>한지·내추럴 소재 콜라보 → 웰니스·K-감성 차별화</li>
+          <li>리뷰 1,000개+ 달성 전략 → 구매 후 후기 자동화</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>데이터 출처: 오늘의집 쇼핑 (ohou.se) 조명 카테고리 판매순 · 수집일: 2026.04.01 · Claude Code 생성</footer>
+
+<script>
+const products = [
+  {순위:1,브랜드:"플로스(Flos)",제품명:"루미네이터 플로어 램프 5colors",유형:"플로어",할인율:10,가격:1530000,평점:4.9,리뷰수:40},
+  {순위:2,브랜드:"플로스(Flos)",제품명:"파렌티지 팬던트 램프",유형:"팬던트",할인율:10,가격:689400,평점:4.9,리뷰수:13},
+  {순위:3,브랜드:"한샘",제품명:"리네아 플로어 장스탠드",유형:"플로어",할인율:51,가격:77900,평점:4.1,리뷰수:26},
+  {순위:4,브랜드:"올루미",제품명:"라비드 감성 무드등 플로어 장스탠드",유형:"플로어",할인율:10,가격:78840,평점:4.8,리뷰수:24},
+  {순위:5,브랜드:"SMOL DESIGN",제품명:"퀴브 포터블램프 4colors",유형:"포터블",할인율:20,가격:92000,평점:4.9,리뷰수:8},
+  {순위:6,브랜드:"오메코",제품명:"LAYER 4 루나리프 플로어 램프",유형:"플로어",할인율:19,가격:217000,평점:4.7,리뷰수:266},
+  {순위:7,브랜드:"아원룩스",제품명:"벤드 플로어 활장스탠드",유형:"플로어",할인율:10,가격:386100,평점:4.9,리뷰수:144},
+  {순위:8,브랜드:"레나에너지",제품명:"스트라이프 패브릭 LED 장스탠드",유형:"플로어",할인율:49,가격:37800,평점:5.0,리뷰수:3},
+  {순위:9,브랜드:"루씨에어",제품명:"코타라 실링팬 137cm 3colors",유형:"실링팬",할인율:0,가격:620000,평점:4.8,리뷰수:153},
+  {순위:10,브랜드:"홈비",제품명:"브렐로 플로어 장스탠드 150 무드 램프",유형:"플로어",할인율:37,가격:52900,평점:4.9,리뷰수:1671},
+  {순위:11,브랜드:"스피아노",제품명:"제프리 LED 안티블루라이트 책상스탠드",유형:"데스크",할인율:20,가격:57900,평점:4.9,리뷰수:3003},
+  {순위:12,브랜드:"누노즈",제품명:"페이퍼램프 스탠다드 한지조명",유형:"한지",할인율:0,가격:34900,평점:4.9,리뷰수:1577},
+  {순위:13,브랜드:"루씨에어",제품명:"레이더3 실링팬 132cm 6colors",유형:"실링팬",할인율:0,가격:550000,평점:4.9,리뷰수:642},
+  {순위:14,브랜드:"유투조명",제품명:"꽈배기 장스탠드 미드센추리 모던",유형:"플로어",할인율:42,가격:98000,평점:4.9,리뷰수:1213},
+  {순위:15,브랜드:"오메코",제품명:"LAYER 4 루나리프 (2차)",유형:"플로어",할인율:19,가격:217000,평점:4.7,리뷰수:266},
+  {순위:16,브랜드:"에어블로우",제품명:"C2",유형:"플로어",할인율:30,가격:299000,평점:4.9,리뷰수:888},
+  {순위:17,브랜드:"레나에너지",제품명:"북유럽 플로어 장스탠드 LED 4colors",유형:"플로어",할인율:60,가격:27800,평점:4.8,리뷰수:6967},
+  {순위:18,브랜드:"일광전구",제품명:"SNOWMAN8 Portable 7Colors",유형:"포터블",할인율:0,가격:40000,평점:4.9,리뷰수:1408},
+  {순위:19,브랜드:"드엘리사",제품명:"미드센추리 플로어 조명 12types",유형:"플로어",할인율:29,가격:279000,평점:4.8,리뷰수:1622},
+  {순위:20,브랜드:"아우어룸",제품명:"머쉬룸 장스탠드 7colors",유형:"플로어",할인율:31,가격:149000,평점:4.8,리뷰수:10681},
+  {순위:21,브랜드:"일광전구",제품명:"SNOWMAN15 Portable 3Colors",유형:"포터블",할인율:0,가격:110000,평점:4.9,리뷰수:588},
+  {순위:22,브랜드:"레나에너지",제품명:"온둘라 플로어 LED 장스탠드",유형:"플로어",할인율:32,가격:87400,평점:4.8,리뷰수:631},
+  {순위:23,브랜드:"플로스(Flos)",제품명:"프리스비 팬던트 조명",유형:"팬던트",할인율:10,가격:904500,평점:5.0,리뷰수:16},
+  {순위:24,브랜드:"아르떼미데",제품명:"테티 천장 벽 조명 4color",유형:"벽/천장",할인율:28,가격:86240,평점:4.8,리뷰수:408},
+  {순위:25,브랜드:"오메코",제품명:"LAYER 1 플로어 램프",유형:"플로어",할인율:14,가격:192000,평점:4.7,리뷰수:454},
+  {순위:26,브랜드:"투플레이스",제품명:"아르코 스틸 실버 플로어 활장 스탠드",유형:"플로어",할인율:44,가격:47900,평점:4.6,리뷰수:3334},
+  {순위:27,브랜드:"아르떼미데",제품명:"톨로메오 메가테라 플로어 조명",유형:"플로어",할인율:12,가격:1258400,평점:4.8,리뷰수:312},
+  {순위:28,브랜드:"루미따",제품명:"DOUBLE LAYER 장 플로어 스탠드 3colors",유형:"플로어",할인율:59,가격:52500,평점:4.8,리뷰수:689},
+  {순위:29,브랜드:"투플레이스",제품명:"레바 원목 LED 식탁등",유형:"팬던트",할인율:34,가격:112000,평점:4.9,리뷰수:540}
+];
+
+const typeColor = {플로어:'t-floor',포터블:'t-portable',데스크:'t-desk',실링팬:'t-ceiling',팬던트:'t-pendant',한지:'t-hanji','벽/천장':'t-ceiling'};
+const maxReview = Math.max(...products.map(p=>p.리뷰수));
+
+// 테이블 렌더
+const tbody = document.getElementById('productTable');
+products.forEach(p => {
+  const rankClass = p.순위===1?'r1':p.순위===2?'r2':p.순위===3?'r3':p.순위<=10?'r-top':'r-normal';
+  const pct = Math.round(p.리뷰수/maxReview*100);
+  tbody.innerHTML += `<tr>
+    <td><span class="rank-num ${rankClass}">${p.순위}</span></td>
+    <td><span class="brand-tag">${p.브랜드}</span></td>
+    <td style="max-width:220px;font-size:0.83rem;">${p.제품명}</td>
+    <td><span class="product-type ${typeColor[p.유형]||'t-floor'}">${p.유형}</span></td>
+    <td class="price-val">${p.가격.toLocaleString()}원</td>
+    <td>${p.할인율>0?`<span class="discount-badge">${p.할인율}%</span>`:'-'}</td>
+    <td>⭐${p.평점}</td>
+    <td><div class="review-bar"><span style="font-size:0.82rem;font-weight:600;min-width:44px">${p.리뷰수.toLocaleString()}</span><div class="rb"><div class="rb-fill" style="width:${pct}%"></div></div></div></td>
+  </tr>`;
+});
+
+// 가격대별 분포
+const priceBands = {'~3만원':0,'3~5만원':0,'5~10만원':0,'10~20만원':0,'20~50만원':0,'50만원+':0};
+products.forEach(p=>{
+  if(p.가격<30000) priceBands['~3만원']++;
+  else if(p.가격<50000) priceBands['3~5만원']++;
+  else if(p.가격<100000) priceBands['5~10만원']++;
+  else if(p.가격<200000) priceBands['10~20만원']++;
+  else if(p.가격<500000) priceBands['20~50만원']++;
+  else priceBands['50만원+']++;
+});
+new Chart(document.getElementById('priceChart'),{type:'bar',data:{labels:Object.keys(priceBands),datasets:[{data:Object.values(priceBands),backgroundColor:['#6366f1','#8b5cf6','#a78bfa','#c4b5fd','#ddd6fe','#ede9fe'],borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{stepSize:1}}}}});
+
+// 유형별
+const typeCnt = {};
+products.forEach(p=>{ typeCnt[p.유형]=(typeCnt[p.유형]||0)+1; });
+new Chart(document.getElementById('typeChart'),{type:'doughnut',data:{labels:Object.keys(typeCnt),datasets:[{data:Object.values(typeCnt),backgroundColor:['#6366f1','#22c55e','#f59e0b','#a855f7','#f43f5e','#0ea5e9'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
+
+// 리뷰 TOP 10
+const top10 = [...products].sort((a,b)=>b.리뷰수-a.리뷰수).slice(0,10);
+new Chart(document.getElementById('reviewChart'),{type:'bar',data:{labels:top10.map(p=>p.브랜드+' '+p.제품명.substring(0,8)+'…'),datasets:[{data:top10.map(p=>p.리뷰수),backgroundColor:'#6366f1',borderRadius:6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>v.toLocaleString()}}}}});
+
+// 브랜드별
+const brandCnt = {};
+products.forEach(p=>{ brandCnt[p.브랜드]=(brandCnt[p.브랜드]||0)+1; });
+const sortedBrands = Object.entries(brandCnt).sort((a,b)=>b[1]-a[1]).slice(0,8);
+new Chart(document.getElementById('brandChart'),{type:'bar',data:{labels:sortedBrands.map(([k])=>k),datasets:[{data:sortedBrands.map(([,v])=>v),backgroundColor:['#f59e0b','#fbbf24','#fcd34d','#fde68a','#fef3c7','#fef9ee','#fffbeb','#fffff0'],borderRadius:6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{stepSize:1}}}}});
+</script>
+</body>
+</html>
